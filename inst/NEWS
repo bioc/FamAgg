@@ -1,0 +1,178 @@
+CHANGES IN VERSION 0.99.4
+-------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+    o Renamed genealogicalIndex method into genealogicalIndexTest to conform the
+      naming convention that all methods ending with Test use simulations to
+      assess signifcance levels.
+
+
+
+CHANGES IN VERSION 0.99.3
+-------------------------
+
+NEW FEATURES
+    o Stratified sampling for kinship group test.
+
+BUG FIXES
+    o Fixed a bug in plotPed related to optional labels.
+    o Fixed a bug in familialIncidenceRate: self-self kinship was not excluded.
+
+
+
+CHANGES IN VERSION 0.99.2
+-------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+    o Vignette streamlining.
+
+
+
+CHANGES IN VERSION 0.99.1
+-------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+    o Fixed pdf export of vignette.
+
+BUG FIXES
+    o Removed the Haplopaint requirement checking during package loading as
+      this resulted in errors on some systems.
+
+
+
+CHANGES IN VERSION 0.99.0
+-------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+    o Improved the vignette.
+    o Fixed several issues in the documentation.
+
+
+
+CHANGES IN VERSION 0.6.0
+------------------------
+
+NEW FEATURES
+    o sliceAge function to define the time an individual spent per age stratum.
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+    o Removed the obsolete FAResult object; all result objects now inherit
+      directly from FAData, that contains now also the trait information.
+    o kinship returns now the kinship matrix with columns and rows corresponding
+      to the ids in the internal pedigree.
+    o Renamed the "kinship test" and FAKinshipResult in "kinship group test" and
+      FAKinGroupResults.
+    o Renamed the "kinship cluster test" and FAKinClustResult in "kinship sum test"
+      and FAKinSumResults.
+    o Renamed FAProbResult in FAProbResults.
+    o Renamed FAGenIndexResult in FAGenIndexResults.
+    o Renamed familialRate into familialIncidenceRate.
+
+
+
+CHANGES IN VERSION 0.5.1
+------------------------
+
+BUG FIXES
+    o Fixed the vignette reducing the number of permutations and the pedigree size.
+
+
+
+CHANGES IN VERSION 0.5.0
+------------------------
+
+NEW FEATURES
+    o plotRes for FAKinshipResult.
+    o Stratified sampling for kinshipClusterTest.
+
+
+BUG FIXES
+    o The range of data values to be plotted includes now also the observed
+      mean kinship value, thus, for results with an p-value=0 are also displayed
+      correctly in plotRes for FAGenIndexResult.
+    o Removed all CHRIS data sources and the related unit tests to compare new
+      and old code.
+    o Fixed a bug in the subsetting method ([) of FAData that did not return the
+      correct kinship matrix.
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+    o Added parameter "only.phenotyped" to the plotPed method.
+    o Added some more use cases and examples to the vignette.
+    o Removed a lot of un-needed warnings.
+    o Results methods of all analysis methods return now a p-value sorted data.frame.
+
+
+
+CHANGES IN VERSION 0.4.0
+------------------------
+
+NEW FEATURES
+    o Implemented the "familial incidence ratio" from Kerber (1995).
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+    o Removed warnings and "cleaned" analysis methods.
+
+
+
+
+CHANGES IN VERSION 0.3.0
+------------------------
+
+NEW FEATURES
+    o New methods to extract matched controls for given ids from the pedigree:
+      getAll, getExternalMatched, getGenerationMatched, getGenerationSexMatched,
+      getSexMatched.
+    o Implemented the "genealogical index" method: FAGenIndexResult and related
+      methods.
+    o Implemented the plotting method plotRes to visualize simulation results (thus
+      far only for FAGenIndexResult).
+
+
+BUG FIXES
+    o Kinships of 0.5 were by default removed in the kinship and the kinship cluster
+      test to avoid considering self-self kinships. This resulted in erroneous kinship
+      estimates if twins (also having a kinship of 0.5) were in the pedigree.
+      Thus, now only the self-self kinship (i.e. diagonal of the kinship matrix) is
+      excluded prior to the kinship aggregations.
+
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+    o Using kinship2 with device="plot" plotting by default.
+    o New section in the vignette describing a genealogical index use-case.
+
+
+
+
+CHANGES IN VERSION 0.2.0
+------------------------
+
+NEW FEATURES
+    o Implemented methods countGenerations, estimateGenerations, generationsFrom,
+      getSiblings, findFounders for FAData, data.frame, pedigree and pedigreeList.
+    o Most pedigree functions (e.g. getChildren, getAncestors) can also be applied
+      to data.frame, pedigree or pedigreeList objects.
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+    o Implemented the following methods for data.frame, pedigree and pedigreeList
+      objects: getAncestors
+    o Added arguments label1, label2 and label3 to plotPed that allow to further
+      customize pedigree plots.
+    o Some more examples added to the vignette.
+
+
+
+CHANGES IN VERSION 0.1.0
+------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+    o Added support for argument is.proband in kinship2 plotting.
+
+
+BUG FIXES
+    o In plotPed, argument cex is passed down to plotting functions.
+
