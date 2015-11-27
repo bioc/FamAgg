@@ -1,0 +1,45 @@
+import(utils)
+import(methods)
+import(BiocGenerics)
+##import(igraph)
+importFrom(igraph, graph, distances, shortest_paths, V, induced_subgraph, clusters)
+importClassesFrom(Matrix, "dsCMatrix")
+importMethodsFrom(Matrix, as.matrix, colSums, colMeans, "[")
+importFrom(gap, pfc.sim)
+import(kinship2)
+importFrom(survey, stratsample)
+##importFrom(kinship2, kinship, pedigree, plot.pedigree)
+##importClassesFrom(graph, graphNEL)
+##importFrom(graph, graphNEL)
+## importMethodsFrom(graph, leaves, isConnected, edges, nodes, isDirected,
+##                   removeNode)
+## importFrom(DBI, dbDriver)
+## importClassesFrom(AnnotationHub, AnnotationHub)
+## importMethodsFrom(AnnotationHub, query, mcols)
+
+## exported functions
+export("FAData", "connectedSubgraph", "doPlotPed", "estimateTimeAtRisk", "ped2graph",
+       "sliceAge", "subPedigree", "switchPlotfun")
+## exported classes
+exportClasses("FAData", "FAProbResults", "FAKinGroupResults",
+              "FAKinSumResults", "FAGenIndexResults")
+## exported methods
+exportMethods("$", "[", "affectedIndividuals", "affectedKinshipGroups", "age", "age<-",
+              "buildPed", "cliques", "cliques<-", "cliqueAndTrait", "family",
+              "kinship", "pedigree", "pedigree<-",
+              "pedigreeSize", "phenotypedIndividuals",
+              "plotPed", "plotRes", "shareKinship", "result", "trait", "trait<-",
+              "traitByClique", "kinship")
+## basic pedigree utils
+exportMethods("countGenerations", "estimateGenerations", "generationsFrom", "getAncestors",
+              "getChildren", "getSiblings", "getMissingMate", "getCommonAncestor",
+              "findFounders")
+## matched control methods
+exportMethods("getAll", "getExternalMatched", "getGenerationMatched",
+              "getGenerationSexMatched", "getSexMatched")
+
+## analysis methods...
+exportMethods("familialIncidenceRate", "genealogicalIndexTest", "kinshipSumTest",
+              "kinshipGroupTest", "probabilityTest", "runSimulation")
+
+
