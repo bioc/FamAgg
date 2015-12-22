@@ -1428,4 +1428,82 @@ Apply that as *first* task in any of the below methods.
 
 
 
+** TODO 1a: Perform a comparison of the results.
+
+Could mean:
++ perform a comparison of the results of the individual algorithms within the
+  same data.
++ perform a comparison of the results with other tools (that's most likely what
+  he means).
+
+** TODO 2a: Provide a more detailed description of the random sampling for the kinship sum test.
+
+** TODO 2b: Add a description/reference to the Yu and Zelterman method in the supplement/vignette.
+
+** TODO 3a: Kinship coefficient calculated in =FamAgg= or elsewhere?
+
+It is calculated in the =kinship2= package, clearly state that in the manuscript
+and make a reference to the package.
+
+We added a sentence to the vignette.
+
+** DONE 3b: Add a vignette describing how to load plink files [2/2]
+   CLOSED: [2015-12-15 Tue 14:43]
+   - State "DONE"       from "TODO"       [2015-12-15 Tue 14:43]
++ [X] Implement pedigree import function for a variety of input formats.
++ [X] Implement export method to export pedigrees in different formats.
+
+** DONE FAM format [/]
+   CLOSED: [2015-12-15 Tue 14:43]
+   - State "DONE"       from "TODO"       [2015-12-15 Tue 14:43]
+FAM files are from plink. Description:
+https://www.cog-genomics.org/plink2/formats.
+Text file without header, space or tab separated.
+Fields:
++ Family ID ('FID')
++ Within-family ID ('IID'; cannot be '0')
++ Within-family ID of father ('0' if father isn't in dataset)
++ Within-family ID of mother ('0' if mother isn't in dataset)
++ Sex code ('1' = male, '2' = female, '0' = unknown)
++ Phenotype value ('1' = control, '2' = case, '-9'/'0'/non-numeric = missing
+  data if case/control)
+
+For values other than {1,2,0,-9} it is assumed not to be case-control but numeric;
+we're not going to support that!
+
+** DONE Import/export /PED/ format [/]
+   CLOSED: [2015-12-15 Tue 14:44]
+   - State "DONE"       from "TODO"       [2015-12-15 Tue 14:44]
+PED files are from plink. Description: http://www.gwaspi.org/?page_id=145.
+ped files contain no headers and the first 6 columns are the same as those of
+the FAM format.
+Fields:
++ Family ID
++ Sample ID
++ Paternal ID
++ Maternal ID
++ Sex (1=male; 2=female; other=unknown)
++ Affection (0=unknown; 1=unaffected; 2=affected)
++ Genotypes (space or tab separated, 2 for each marker. 0=missing)
+
+
+** DONE Include an argument =rm.singletons= allowing to keep/remove not connected individuals [6/6]
+   CLOSED: [2015-12-18 Fri 13:27]
+   - State "DONE"       from "TODO"       [2015-12-18 Fri 13:27]
++ [X] Implement a /generic/ method to do that: =removeSingletons=, had also
+  =doPrunePed=, but that used graphs and was kinda slower.
++ *Note*: this has mainly an impact on the genealogical index, all other methods
+  are not affected, i.e. return =NA= for such cases. Should I always make sure
+  that these have =0= instead of =NA=.
+
+Apply that as *first* task in any of the below methods.
+
++ [X] GI/GIF
++ [X] FIR
++ [X] FSIR
++ [X] KS
++ [X] KG
+
+
+
 * References
