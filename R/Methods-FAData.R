@@ -426,6 +426,7 @@ setMethod("buildPed", "FAData",
               ## set all mothers and fathers that are not in id to 0
               ped[!(ped$mother %in% ped$id), "mother"] <- NA
               ped[!(ped$father %in% ped$id), "father"] <- NA
+              ## ped <- doRemoveChildlessFounders(ped)
               ped <- removeSingletons(ped)
               return(ped)
           })
