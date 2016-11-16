@@ -1,3 +1,11 @@
+CHANGES IN VERSION 1.2.1
+-------------------------
+
+BUG FIXES
+    o FAData and pedigree<- throw now an error if the IDs of the individuals are
+      not unique.
+
+
 CHANGES IN VERSION 0.99.9
 -------------------------
 
