@@ -1,3 +1,9 @@
+CHANGES IN VERSION 1.7.4
+-------------------------
+
+o Fix trait-related problem in binomial test.
+
+
 CHANGES IN VERSION 1.7.3
 -------------------------
 

@@ -165,8 +165,9 @@ binomialTest <- function(object, trait, traitName, global = FALSE,
     if (!missing(traitName))
         object@traitname <- traitName
     ## Run the test.
-    object@result <- .binomialTest(object, trait = trait, global = global,
-                                   prob = prob, alternative = alternative)
+    object@result <- .binomialTest(object, trait = trait(object),
+                                   global = global, prob = prob,
+                                   alternative = alternative)
     if (validObject(object))
         object
 }
