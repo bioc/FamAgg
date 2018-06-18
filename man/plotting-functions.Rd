@@ -119,7 +119,8 @@ switchPlotfun(method)
   }
 
   \item{main}{
-    (Optional) the title of the plot.
+    (Optional) the title of the plot. Note that kinship2-based plotting
+    does not support this parameter.
   }
 
   \item{device}{

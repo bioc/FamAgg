@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.9.1
+------------------------
+
+o Fix problem with custom plot title when using haplopainter (issue #16).
+
+
+
 CHANGES IN VERSION 1.7.4
 -------------------------
 

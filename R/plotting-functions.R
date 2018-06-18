@@ -127,6 +127,9 @@ ks2paint <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
     }else{
         is.deceased <- rep(0, length(individual))
     }
+    if (!is.null(main))
+        warning("pedigree plotting functionality from the kinship2 package",
+                " does not support specifying a plot title.")
     ## OK, now trying to avoid a stupid bug in kinship2:
     if(any(is.na(affected)) & length(unique(affected)) == 2){
         ## append a dummy individual...
@@ -173,7 +176,7 @@ ks2paint <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
         symbolsize <- 1
     }
     Coords <- plot(ped, status=is.deceased, affected=affected,
-                   keep.par=TRUE, ...)
+                   keep.par=TRUE, main = main, ...)
     oldxpd <- par()$xpd
     par(xpd=NA)
     ## if we do have any highlight ids or similar, i.e. text1.below.symbol etc.
@@ -295,7 +298,7 @@ haplopaint <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
                            " -b -pedfile ", dfFile,
                            " -pedformat csv -outfile ", filename,
                            " -bgcolor \\#ffffff -outformat ", device,
-                           " -resolution ", res, " -family ", main)
+                           " -resolution ", res, " -family \"", main, "\"")
         res <- tryCatch(system(plotcall), error=function(e){return(e)})
         if (inherits(res, "simpleError")) {
             stop("Error calling HaploPainter!", res$message)
