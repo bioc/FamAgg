@@ -17,7 +17,7 @@ doPlotPed(family=NULL, individual=NULL, father=NULL, mother=NULL, gender=NULL,
         text.inside.symbol=NULL, text.beside.symbol=NULL,
         text1.below.symbol=NULL, text2.below.symbol=NULL,
         text3.below.symbol=NULL, text4.below.symbol=NULL,
-        filename=NULL, main=NULL, device="plot", res=600, ...)
+        filename=NULL, device="plot", res=600, ...)
 
 switchPlotfun(method)
 
@@ -118,11 +118,6 @@ switchPlotfun(method)
     plotted to a temporary file.
   }
 
-  \item{main}{
-    (Optional) the title of the plot. Note that kinship2-based plotting
-    does not support this parameter.
-  }
-
   \item{device}{
     The format of the output file. Can be \code{"ps"}, \code{"pdf"},
     \code{"svg"}, \code{"png"} or \code{"txt"} if \code{HaploPainter} is
@@ -160,7 +155,7 @@ switchPlotfun(method)
 
   All arguments passed to the \code{doPlotPed} function have to have the
   same length (with the exception of arguments \code{filename},
-  \code{main}, \code{device} and \code{res}) and their order has to
+  \code{device} and \code{res}) and their order has to
   match the order of the individuals.
 
   The arguments of the \code{doPlotPed} function represent the input

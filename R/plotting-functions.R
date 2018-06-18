@@ -29,7 +29,7 @@ doPlotPed <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
                       text.inside.symbol=NULL, text.beside.symbol=NULL,
                       text1.below.symbol=NULL, text2.below.symbol=NULL,
                       text3.below.symbol=NULL, text4.below.symbol=NULL,
-                      filename=NULL, main=NULL, device="plot", res=600, ...){
+                      filename=NULL, device="plot", res=600, ...){
     plotfun <- options()$FamAgg$plotfun
     plotfun <- match.arg(plotfun, c("ks2paint", "haplopaint"))
     if(plotfun == "haplopaint"){
@@ -52,7 +52,7 @@ doPlotPed <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
                     text2.below.symbol=text2.below.symbol,
                     text3.below.symbol=text3.below.symbol,
                     text4.below.symbol=text4.below.symbol,
-                    filename=filename, main=main, device=device,
+                    filename=filename, device=device,
                     res=res)
     addArgs <- list(...)
     ## kick out arguments we know might be passed, but are not needed
@@ -80,7 +80,7 @@ ks2paint <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
                      text.inside.symbol=NULL, text.beside.symbol=NULL,
                      text1.below.symbol=NULL, text2.below.symbol=NULL,
                      text3.below.symbol=NULL, text4.below.symbol=NULL,
-                     filename=NULL, main=NULL, device="pdf", res=600, ...){
+                     filename=NULL, device="pdf", res=600, ...){
     device <- match.arg(device, c("pdf", "png", "plot"))
     ## device plot means we're just plotting, not generating a file.
     ## affected can be a vector or matrix with up to 4 columns.
@@ -127,9 +127,6 @@ ks2paint <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
     }else{
         is.deceased <- rep(0, length(individual))
     }
-    if (!is.null(main))
-        warning("pedigree plotting functionality from the kinship2 package",
-                " does not support specifying a plot title.")
     ## OK, now trying to avoid a stupid bug in kinship2:
     if(any(is.na(affected)) & length(unique(affected)) == 2){
         ## append a dummy individual...
@@ -176,7 +173,7 @@ ks2paint <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
         symbolsize <- 1
     }
     Coords <- plot(ped, status=is.deceased, affected=affected,
-                   keep.par=TRUE, main = main, ...)
+                   keep.par=TRUE, ...)
     oldxpd <- par()$xpd
     par(xpd=NA)
     ## if we do have any highlight ids or similar, i.e. text1.below.symbol etc.
@@ -249,7 +246,7 @@ haplopaint <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
                        text.inside.symbol=NULL, text.beside.symbol=NULL,
                        text1.below.symbol=NULL, text2.below.symbol=NULL,
                        text3.below.symbol=NULL, text4.below.symbol=NULL,
-                       filename=NULL, main=NULL, device="pdf", res=600, ...){
+                       filename=NULL, device="pdf", res=600, ...){
     device <- match.arg(device, c("ps", "pdf", "svg", "png", "txt"))
     ## first check input arguments.
     df <- buildHaplopaintDataframe(family=family, individual=individual,
@@ -276,8 +273,6 @@ haplopaint <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
         df <- df[colnames(kins), ]
         warning("Removed ", sum(cols <= 0.5), " childless founders!")
     }
-    if(is.null(main))
-        main <- df[1, "family"]
     if(is.null(filename))
         filename <- paste0(tempfile(), ".", device)
     if (device == "txt") {
@@ -298,7 +293,7 @@ haplopaint <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
                            " -b -pedfile ", dfFile,
                            " -pedformat csv -outfile ", filename,
                            " -bgcolor \\#ffffff -outformat ", device,
-                           " -resolution ", res, " -family \"", main, "\"")
+                           " -resolution ", res, "")
         res <- tryCatch(system(plotcall), error=function(e){return(e)})
         if (inherits(res, "simpleError")) {
             stop("Error calling HaploPainter!", res$message)

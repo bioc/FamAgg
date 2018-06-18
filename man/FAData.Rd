@@ -326,8 +326,7 @@ FAData(pedigree, age, trait, traitName, header=FALSE, sep="\t", id.col="id",
 
   \item{...}{
     Additional arguments to be passed to the plotting functions
-    (\code{\link{doPlotPed}} for \code{plotPed}). Note that a variable
-    \code{main} is ignored by kinship2-based plotting.
+    (\code{\link{doPlotPed}} for \code{plotPed}).
   }
 
 }
