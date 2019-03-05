@@ -1,8 +1,15 @@
+CHANGES IN VERSION 1.9.2
+------------------------
+
+o Fix corner case in generating plotting data pedigree.
+o Add -family parameter for haplopainter, got lost during refactoring
+  (issue #16 aftermath).
+
+
 CHANGES IN VERSION 1.9.1
 ------------------------
 
 o Fix problem with custom plot title when using haplopainter (issue #16).
-
 
 
 CHANGES IN VERSION 1.7.4
@@ -25,7 +32,7 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o plotPed with haplopaint plotting supports device = "txt" that just writes
       the data.frame for haplopaint and returns the file name, does however not
       call Haplopaint.
-    
+
 
 CHANGES IN VERSION 1.5.2
 -------------------------

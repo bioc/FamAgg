@@ -449,10 +449,18 @@ setMethod("buildPed", "FAData",
               ## first get all ancestors:
               ancs <- getAncestors(object, id=id,
                                    max.generations = max.generations.up)
-              ## add eventual missing mates.
+              ## add eventual missing mates for the ancestors:
               mismate <- doGetMissingMate(ped, id=ancs)
+              ## search horizontally for missing mates (incl. serial monogamy):
+              idmates <- c(id)
+              repeat {
+                nrmates <- length(idmates)
+                idmates <- unique(c(id, doGetMissingMate(ped, id=idmates)))
+                if( length(idmates) == nrmates )
+                  break
+              }
               ## next get all children:
-              allids <- unique(c(ancs, id, mismate))
+              allids <- unique(c(ancs, idmates, mismate))
               chlds <- getChildren(object, id=allids,
                                    max.generations=max.generations.down)
               ## get all missing mates:
