@@ -273,6 +273,10 @@ haplopaint <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
         df <- df[colnames(kins), ]
         warning("Removed ", sum(cols <= 0.5), " childless founders!")
     }
+    ## Attention: if family parameter has not been provided, this is set to 1 in
+    ## buildHaplopaintDataframe. This does not happen at the moment, as it is
+    ## called by plotPed, where that parameter is set.
+    famid <- df[1, "family"]
     if(is.null(filename))
         filename <- paste0(tempfile(), ".", device)
     if (device == "txt") {
@@ -293,7 +297,7 @@ haplopaint <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
                            " -b -pedfile ", dfFile,
                            " -pedformat csv -outfile ", filename,
                            " -bgcolor \\#ffffff -outformat ", device,
-                           " -resolution ", res, "")
+                           " -resolution ", res, " -family \"", famid, "\"")
         res <- tryCatch(system(plotcall), error=function(e){return(e)})
         if (inherits(res, "simpleError")) {
             stop("Error calling HaploPainter!", res$message)
