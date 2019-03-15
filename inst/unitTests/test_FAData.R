@@ -489,4 +489,3 @@ test_genevieve_reported_errors <- function() {
 
     fad <- FAData(ped3)
 }
-

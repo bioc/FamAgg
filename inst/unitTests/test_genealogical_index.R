@@ -18,23 +18,15 @@ test_gen_index_per_family <- function(){
     set.seed(18011977)
     ## family 14 looks promising!
     trait(fad) <- tcancer
-    ##plotPed(far, family="14", cex=0.5)
 
     gi <- as(fad, "FAGenIndexResults")
     Test <- runSimulation(gi, controlSetMethod="getAll", nsim=100, perFamilyTest=TRUE)
-    ## Test <- FamAgg:::.genIndex(pedigree(fad), kin=kinship(fad), trait=tcancer,
-    ##                            controlSetMethod="getAll", nsim=100,
-    ##                            perFamilyTest=TRUE)
     All <- Test@sim[["14"]]
     All8 <- Test@sim[["8"]]
     expectAff <- as.character(c(444, 447, 450, 451, 452))
     checkEquals(sort(All$affected), sort(expectAff))
 
-    ## Test <- FamAgg:::.genIndex(pedigree(fad), kin=kinship(fad), trait=tcancer,
-    ##                            controlSetMethod="getSexMatched", nsim=100,
-    ##                            perFamilyTest=TRUE)
-    ## SexMatch <- Test[["14"]]
-    ## SexMatch8 <- Test[["8"]]
+    set.seed(18011977)
     Test <- runSimulation(gi, controlSetMethod="getSexMatched", nsim=100,
                           perFamilyTest=TRUE)
     SexMatch <- Test@sim[["14"]]
@@ -44,10 +36,7 @@ test_gen_index_per_family <- function(){
     checkEquals(sort(SexMatch$ctrls), sort(expectCtrls))
 
     ## Test generation matched.
-    ## Test <- FamAgg:::.genIndex(pedigree(fad), kin=kinship(fad), trait=tcancer,
-    ##                            controlSetMethod="getGenerationMatched", nsim=100,
-    ##                            perFamilyTest=TRUE)
-    ## GenMatch <- Test[["14"]]
+    set.seed(18011977)
     Test <- runSimulation(gi, controlSetMethod="getGenerationMatched", nsim=100,
                           perFamilyTest=TRUE)
     GenMatch <- Test@sim[["14"]]
@@ -57,10 +46,7 @@ test_gen_index_per_family <- function(){
     checkEquals(sort(GenMatch$ctrls), sort(expectCtrls))
 
     ## Test generation & sex matched. Note that the result is no longer significant!
-    ## Test <- FamAgg:::.genIndex(pedigree(fad), kin=kinship(fad), trait=tcancer,
-    ##                            controlSetMethod="getGenerationSexMatched", nsim=100,
-    ##                            perFamilyTest=TRUE)
-    ## GenSexMatch <- Test[["14"]]
+    set.seed(18011977)
     Test <- runSimulation(gi, controlSetMethod="getGenerationSexMatched", nsim=100,
                           perFamilyTest=TRUE)
     GenSexMatch <- Test@sim[["14"]]
@@ -86,7 +72,6 @@ test_gen_index_per_family <- function(){
 
     ## families with male cases: 4, 8, 9, 10, 19
     ## other interesting family: 8
-    ## LLLL Test with or without strata sampling for family 8.
     plotPed(fad, family="8", cex=0.8)
     ## sex matching and getting all should not make any difference here.
     checkEquals(sort(All8$ctrls), sort(SexMatch8$ctrls))
@@ -95,19 +80,14 @@ test_gen_index_per_family <- function(){
     set.seed(18011977)
     Test <- runSimulation(gi, controlSetMethod="getAll", nsim=100, perFamilyTest=TRUE,
                           strata=fad$sex)
-    ## Test <- FamAgg:::.genIndex(pedigree(fad), kin=kinship(fad), trait=tcancer,
-    ##                            controlSeteMethod="getAll", nsim=100, perFamilyTest=TRUE,
-    ##                            strata=fad$sex)
-    ## All8Strata <- Test[["8"]]
     All8Strata <- Test@sim[["8"]]
     checkTrue(All8Strata$pvalueKinship != All8$pvalueKinship)
 
     ## the results for family 14 have to be identical:
-    Test <- runSimulation(gi, controlSetMethod="getSexMatched", nsim=100, perFamilyTest=TRUE,
-                          strata=gi$sex)
-    ## Test <- FamAgg:::.genIndex(pedigree(fad), kin=kinship(fad), trait=tcancer,
-    ##                            controlSeteMethod="getSexMatched", nsim=100, perFamilyTest=TRUE,
-    ##                            strata=fad$sex)
+    set.seed(18011977)
+    Test <- runSimulation(gi, controlSetMethod = "getSexMatched",
+                          nsim = 100, perFamilyTest = TRUE,
+                          strata = gi$sex)
     checkEquals(SexMatch$pvalueKinship, Test@sim[["14"]]$pvalueKinship)
 }
 
@@ -157,4 +137,3 @@ test_gen_index_with_gap <- function(){
     giGap <- gif(gapPed[, c("id", "father", "mother")], as.numeric(affIds))
     checkEquals(result(gi)$genealogical_index, giGap[[1]])
 }
-
