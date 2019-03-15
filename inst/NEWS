@@ -1,3 +1,8 @@
+CHANGES IN VERSION 1.11.1
+
+- Fix issue with ids in the pedigree being factors.
+
+
 CHANGES IN VERSION 1.9.1
 ------------------------
 
@@ -25,7 +30,7 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o plotPed with haplopaint plotting supports device = "txt" that just writes
       the data.frame for haplopaint and returns the file name, does however not
       call Haplopaint.
-    
+
 
 CHANGES IN VERSION 1.5.2
 -------------------------
@@ -303,4 +308,3 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 BUG FIXES
     o In plotPed, argument cex is passed down to plotting functions.
-
