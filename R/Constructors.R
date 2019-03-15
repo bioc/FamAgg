@@ -63,6 +63,7 @@ FAData <- function(pedigree, age, trait, traitName, header=FALSE, sep="\t",
             }
         }
     }
+    if (is.factor(pedigree$id)) pedigree$id <- as.character(pedigree$id)
     ## Fixing the founders:
     if(is.factor(pedigree$father))
         pedigree$father <- as.character(pedigree$father)
@@ -112,5 +113,3 @@ FAData <- function(pedigree, age, trait, traitName, header=FALSE, sep="\t",
     if (validObject(FSD))
         FSD
 }
-
-
