@@ -1,14 +1,34 @@
 Package: FamAgg
 Type: Package
 Title: Pedigree Analysis and Familial Aggregation
-Version: 1.11.1
+Version: 1.11.2
+Authors@R: c(person(given = "Johannes", family = "Rainer",
+	   email = "johannes.rainer@eurac.edu",
+	   role = c("aut", "cre"),
+	   comment = c(ORCID = "0000-0002-6977-7147")),
+	   person(given = "Daniel", family = "Taliun",
+	   role = "ctb"),
+	   person(given = "Christian", family = "Weichenberger",
+	   email = "christian.weichenberger@eurac.edu",
+	   role = "ctb",
+	   comment = c(ORCID = "0000-0002-2176-0274"))
+	  )
 Author: J. Rainer, D. Taliun, C.X. Weichenberger
 Maintainer: Johannes Rainer <johannes.rainer@eurac.edu>
 URL: https://github.com/EuracBiomedicalResearch/FamAgg
 BugReports: https://github.com/EuracBiomedicalResearch/FamAgg/issues
-Imports: gap (>= 1.1-17), Matrix, BiocGenerics, utils, survey
-Depends: methods, kinship2, igraph
-Suggests: BiocStyle, knitr, RUnit, rmarkdown
+Imports: gap (>= 1.1-17),
+	 Matrix,
+	 BiocGenerics,
+	 utils,
+	 survey
+Depends: methods,
+	 kinship2,
+	 igraph
+Suggests: BiocStyle,
+	  knitr,
+	  RUnit,
+	  rmarkdown
 VignetteBuilder: knitr
 Description: Framework providing basic pedigree analysis and plotting
 	     utilities as well as a variety of methods to evaluate

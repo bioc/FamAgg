@@ -34,27 +34,27 @@ FAData <- function(pedigree, age, trait, traitName, header=FALSE, sep="\t",
         }
         message("OK\n")
     }
-    if(is.matrix(pedigree)){
+    if (is.matrix(pedigree)) {
         ## transform to data.frame
-        pedigree <- as.data.frame(pedigree, stringsAsFactors=FALSE)
+        pedigree <- as.data.frame(pedigree, stringsAsFactors = FALSE)
     }
-    if(!(is.data.frame(pedigree) | is(pedigree, "pedigree") |
-         is(pedigree, "pedigreeList"))){
+    if (!(is.data.frame(pedigree) | is(pedigree, "pedigree") |
+          is(pedigree, "pedigreeList"))) {
         stop("Argument pedigree has to be a data.frame, a character string ",
              "specifying the file containing the pedigree, a pedigree object ",
              "or a pedigreeList object!")
-    }else{
-        if(is.data.frame(pedigree)){
+    } else {
+        if (is.data.frame(pedigree)) {
             CN <- .PEDCN
-            if(!noColNames(pedigree)){
+            if (!noColNames(pedigree)) {
                 ## check if we have all column names required.
-                if(sum(CN %in% colnames(pedigree)) != length(CN)){
+                if (sum(CN %in% colnames(pedigree)) != length(CN)) {
                     stop("pedigree is expected to have column names ",
                          paste(CN, collapse=", "))
                 }
                 pedigree <- pedigree[, CN]
-            }else{
-                if(ncol(pedigree)!=length(CN))
+            } else {
+                if (ncol(pedigree)!=length(CN))
                     stop("pedigree is expected to have ", length(CN),
                          " columns but I got ", ncol(pedigree), "!")
                 warning("Forcing column names ", paste(CN, collapse=";"),
@@ -63,18 +63,20 @@ FAData <- function(pedigree, age, trait, traitName, header=FALSE, sep="\t",
             }
         }
     }
+    ## We don't lile factors.
+    if (is.factor(pedigree$id)) pedigree$id <- as.character(pedigree$id)
     ## Fixing the founders:
-    if(is.factor(pedigree$father))
+    if (is.factor(pedigree$father))
         pedigree$father <- as.character(pedigree$father)
-    if(is.factor(pedigree$mother))
+    if (is.factor(pedigree$mother))
         pedigree$mother <- as.character(pedigree$mother)
-    if(is.character(pedigree$father))
+    if (is.character(pedigree$father))
         pedigree$father[pedigree$father == ""] <- NA
-    if(is.numeric(pedigree$father))
+    if (is.numeric(pedigree$father))
         pedigree$father[pedigree$father == 0] <- NA
-    if(is.character(pedigree$mother))
+    if (is.character(pedigree$mother))
         pedigree$mother[pedigree$mother == ""] <- NA
-    if(is.numeric(pedigree$mother))
+    if (is.numeric(pedigree$mother))
         pedigree$mother[pedigree$mother == 0] <- NA
     pedigree(FSD) <- pedigree
     ## processing age
@@ -112,5 +114,3 @@ FAData <- function(pedigree, age, trait, traitName, header=FALSE, sep="\t",
     if (validObject(FSD))
         FSD
 }
-
-

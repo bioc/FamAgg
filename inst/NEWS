@@ -1,6 +1,6 @@
-CHANGES IN VERSION 1.9.2
-------------------------
+CHANGES IN VERSION 1.11.1
 
+o Fix issue with ids in the pedigree being factors.
 o Fix corner case in generating plotting data pedigree.
 o Add -family parameter for haplopainter, got lost during refactoring
   (issue #16 aftermath).
@@ -310,4 +310,3 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 BUG FIXES
     o In plotPed, argument cex is passed down to plotting functions.
-
