@@ -64,6 +64,10 @@ doGetAncestors <- function(ped, id=NULL, maxlevel=3){
     as.character(unique(allids))
 }
 
+doGetParents <- function(ped, id = NULL) {
+    doGetAncestors(ped = ped, id = id, maxlevel = 1)
+}
+
 ## gets all the children for (one or more) id(s)
 ## note: these are only children in direct blood line.
 doGetChildren <- function(ped, id=NULL, maxlevel=16){
@@ -775,4 +779,3 @@ doPrunePed <- function(ped, addMissingMates=FALSE, solveMultiGraph="use.all"){
     }
     ped
 }
-

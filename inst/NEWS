@@ -1,3 +1,12 @@
+CHANGES IN VERSION 1.10.2
+-------------------------
+
+o Fix a bug in buildPed where a mate/father/mather would be missed in some
+  rare cases.
+o Fix a bug in pedigree<- that can lead to differences between IDs for
+  individuals and rownames of the pedigree data.frame.
+
+
 CHANGES IN VERSION 1.10.1
 -------------------------
 

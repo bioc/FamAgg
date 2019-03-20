@@ -376,6 +376,8 @@ test_buildPed <- function(){
     res_2 <- family(fad, family = "5")
     checkTrue(nrow(res) < nrow(res_2))
     res_2 <- removeSingletons(res_2)
+    res <- res[order(res$id), ]
+    res_2 <- res_2[order(res_2$id), ]
     checkEquals(res, res_2)
 }
 
