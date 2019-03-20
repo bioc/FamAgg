@@ -223,6 +223,7 @@ test_do_get_ancestors <- function(){
                              id="11"), c("5", "26", "1", "2"))
     expect <- as.character(c(3, 4, 24, 25))
     checkEquals(sort(getAncestors(fad, c(22, 3), max.generations=1)), sort(expect))
+    checkEquals(getAncestors(fad, 4, 1), FamAgg:::doGetParents(pedigree(fad), 4))
 }
 
 test_do_get_children <- function(){
@@ -361,7 +362,3 @@ test_removeSingletons <- function() {
     pedSub <- removeSingletons(ped)
     checkEquals(trait(pedSub), trait[pedSub$id])
 }
-
-
-
-

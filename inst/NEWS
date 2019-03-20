@@ -1,9 +1,23 @@
-CHANGES IN VERSION 1.11.1
+CHANGES IN VERSION 1.11.3
+-------------------------
 
-o Fix issue with ids in the pedigree being factors.
+o Fixed bug in buildPed missing out mates in some special cases.
+o Fixed bug in buildPed causing differences between individual IDs and rownames
+  of the pedigree data.frame.
+
+
+CHANGES IN VERSION 1.11.2
+-------------------------
+
 o Fix corner case in generating plotting data pedigree.
 o Add -family parameter for haplopainter, got lost during refactoring
   (issue #16 aftermath).
+
+
+CHANGES IN VERSION 1.11.1
+-------------------------
+
+o Fix issue with ids in the pedigree being factors.
 
 
 CHANGES IN VERSION 1.9.1

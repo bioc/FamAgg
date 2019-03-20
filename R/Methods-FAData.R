@@ -171,19 +171,19 @@ setMethod("pedigree", "FAData", function(object, return.type="data.frame"){
 
 
 ## pedigree<- internally checks validity of the submitted value.
-setReplaceMethod("pedigree", "FAData", function(object, value){
-    if(is.data.frame(value)){
+setReplaceMethod("pedigree", "FAData", function(object, value) {
+    if (is.data.frame(value)) {
         CN <- .PEDCN
-        if(!noColNames(value)){
+        if (!noColNames(value)) {
             ## check the colnames
-            if(sum(CN %in% colnames(value)) != length(CN)){
+            if (sum(CN %in% colnames(value)) != length(CN)) {
                 stop(paste0("pedigree is expected to have column names ",
                             paste(CN, collapse=", "), "."))
             }
             value <- value[, CN]
-        }else{
+        } else {
             ## no col names, thus assuming they fit what we expect.
-            if(ncol(value)!=length(CN))
+            if (ncol(value)!=length(CN))
                 stop(paste0("pedigree is expected to have ", length(CN),
                             " columns but I got ", ncol(value), "!"))
             colnames(value) <- CN
@@ -195,39 +195,44 @@ setReplaceMethod("pedigree", "FAData", function(object, value){
             stop("IDs for individuals have to be unique, even for individuals",
                  " in different families!")
         rownames(value) <- as.character(value$id)
-    }else if(is(value, "pedigree") | is(value, "pedigreeList")){
+    } else if (is(value, "pedigree") | is(value, "pedigreeList")) {
         value <- ped2df(value)
-    }else{
+    } else {
         stop("pedigree has to be a data.frame, a pedigree or a pedigreeList ",
              "object!")
     }
 
-    ## next remove all white spaces!
-    for(theCol in c("id", "family", "father", "mother")){
+    ## Remove trailing and leading white spaces
+    for (theCol in c("id", "family", "father", "mother")) {
         tmp <- value[, theCol]
         M <- mode(tmp)
-        tmp <- gsub(tmp, pattern="\\s", replacement="")
+        tmp <- gsub(tmp, pattern = "^(\\s)*", replacement = "")
+        tmp <- gsub(tmp, pattern = "(\\s)*$", replacement = "")
         mode(tmp) <- M
         value[, theCol] <- tmp
         rm(tmp)
     }
+    if (is.factor(value$id))
+        value$id <- as.character(value$id)
+    rownames(value) <- value$id
     ## Fix father/mother column. We're using NA for not present!
-    if(is.factor(value$father))
+    if (is.factor(value$father))
         value$father <- as.character(value$father)
-    if(is.factor(value$mother))
+    if (is.factor(value$mother))
         value$mother <- as.character(value$mother)
-    if(is.character(value$father))
+    if (is.character(value$father))
         value$father[value$father == ""] <- NA
-    if(is.character(value$father))
+    if (is.character(value$father))
         value$father[value$father == "0"] <- NA
-    if(is.numeric(value$father))
+    if (is.numeric(value$father))
         value$father[value$father == 0] <- NA
-    if(is.character(value$mother))
+    if (is.character(value$mother))
         value$mother[value$mother == ""] <- NA
-    if(is.character(value$mother))
+    if (is.character(value$mother))
         value$mother[value$mother == "0"] <- NA
-    if(is.numeric(value$mother))
+    if (is.numeric(value$mother))
         value$mother[value$mother == 0] <- NA
+
     object@pedigree <- value
     validObject(object)
 
@@ -430,49 +435,50 @@ setMethod("buildPed", "FAData",
               }
               id <- as.character(id)
               notThere <- !(id %in% ped$id)
-              if(any(notThere)){
+              if (any(notThere)) {
                   id <- id[!notThere]
                   warning("Removed ", sum(notThere),
                           " ids since they are not in the pedigree!")
-                  if(length(id) == 0)
+                  if (length(id) == 0)
                       stop("No id available!")
               }
-              if((length(id) == 1) & prune){
+              if ((length(id) == 1) & prune) {
                   prune <- FALSE
                   warning("Setting prune=FALSE since there is only a single id!")
               }
-              if(prune){
+              if (prune) {
                   ## restrict to the smalles pedigree including the ids
-                  return(subPedigree(ped, id=id))
+                  return(subPedigree(ped, id = id))
               }
               ## else grow the full pedigree
               ## first get all ancestors:
-              ancs <- getAncestors(object, id=id,
-                                   max.generations = max.generations.up)
+              ancs <- doGetAncestors(ped, id = id,
+                                     maxlevel = max.generations.up)
               ## add eventual missing mates for the ancestors:
-              mismate <- doGetMissingMate(ped, id=ancs)
-              ## search horizontally for missing mates (incl. serial monogamy):
-              idmates <- c(id)
-              repeat {
-                nrmates <- length(idmates)
-                idmates <- unique(c(id, doGetMissingMate(ped, id=idmates)))
-                if( length(idmates) == nrmates )
-                  break
-              }
+              mismate <- doGetMissingMate(ped, id = ancs)
+              ## ## search horizontally for missing mates (incl. serial monogamy):
+              ## idmates <- c(id)
+              ## repeat {
+              ##     nrmates <- length(idmates)
+              ##     idmates <- unique(c(id, doGetMissingMate(ped, id = idmates)))
+              ##     if( length(idmates) == nrmates )
+              ##         break
+              ## }
+              ## allids <- unique(c(ancs, idmates, mismate))
+              allids <- unique(c(ancs, id, mismate))
               ## next get all children:
-              allids <- unique(c(ancs, idmates, mismate))
-              chlds <- getChildren(object, id=allids,
-                                   max.generations=max.generations.down)
-              ## get all missing mates:
-              allids <- unique(c(allids, chlds))
-              allmates <- getMissingMate(object, id=allids)
-              allids <- unique(c(id, ancs, chlds, allmates))
-              ped <- ped[as.character(allids), , drop=FALSE]
+              chlds <- doGetChildren(ped, id = allids,
+                                     maxlevel = max.generations.down)
+              ## Get eventually missing parents for the children: special case
+              ## for one CHRIS pedigree
+              allids <- unique(c(allids, chlds, doGetParents(ped, chlds)))
+              ## Get all missing mates:
+              allids <- unique(c(allids, doGetMissingMate(ped, allids)))
+              ped <- ped[as.character(allids), , drop = FALSE]
               ## fixfounders:
               ## set all mothers and fathers that are not in id to 0
               ped[!(ped$mother %in% ped$id), "mother"] <- NA
               ped[!(ped$father %in% ped$id), "father"] <- NA
-              ## ped <- doRemoveChildlessFounders(ped)
               ped <- removeSingletons(ped)
               return(ped)
           })

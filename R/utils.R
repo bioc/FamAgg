@@ -34,24 +34,25 @@ buildPedigree <- function(ped, ids){
 }
 
 
-doGetSiblings <- function(ped, id=NULL){
+doGetSiblings <- function(ped, id = NULL) {
     if(is.null(id))
         stop("At least one if has to be specified!")
-    parents <- doGetAncestors(ped, id=id, maxlevel=1)
-    siblings <- doGetChildren(ped, id=parents, maxlevel=1)
+    parents <- doGetParents(ped, id = id)
+    siblings <- doGetChildren(ped, id = parents, maxlevel = 1)
     siblings
 }
 
 ## gets all the ancestors for (one or more) id(s)
-doGetAncestors <- function(ped, id=NULL, maxlevel=3){
-    if(is.null(id))
+doGetAncestors <- function(ped, id = NULL, maxlevel = 3) {
+    if (is.null(id))
         stop("At least one id has to be specified!")
+    id <- as.character(id)
     allids <- NULL
-    for(i in 1:maxlevel){
+    for (i in 1:maxlevel) {
         ## get the parents of all the allids
         newids <- unlist(
-            ped[as.character(ped$id) %in% id, c("father", "mother")],
-            use.names=FALSE
+            ped[which(ped$id %in% id), c("father", "mother")],
+            use.names = FALSE
         )
         zeros <- is.na(newids)
         ##zeros <- newids == founder
@@ -64,6 +65,10 @@ doGetAncestors <- function(ped, id=NULL, maxlevel=3){
     as.character(unique(allids))
 }
 
+doGetParents <- function(ped, id = NULL) {
+    doGetAncestors(ped = ped, id = id, maxlevel = 1)
+}
+
 ## gets all the children for (one or more) id(s)
 ## note: these are only children in direct blood line.
 doGetChildren <- function(ped, id=NULL, maxlevel=16){
@@ -72,7 +77,7 @@ doGetChildren <- function(ped, id=NULL, maxlevel=16){
     allids <- NULL
     for(i in 1:maxlevel){
         ## get all the children for the ids
-        newids <- ped[ped$father %in% id | ped$mother %in% id, "id"]
+        newids <- ped[which(ped$father %in% id | ped$mother %in% id), "id"]
         if(length(newids)==0)
             break
         id <- newids
@@ -89,8 +94,8 @@ doGetChildren <- function(ped, id=NULL, maxlevel=16){
 doGetMissingMate <- function(ped, id){
     if(is.null(id))
         stop("Al least one id has to be specified")
-    newids <- c(ped[ped$father %in% id, "mother"],
-                ped[ped$mother %in% id, "father"])
+    newids <- c(ped[which(ped$father %in% id), "mother"],
+                ped[which(ped$mother %in% id), "father"])
     unique(newids)
 }
 
@@ -775,4 +780,3 @@ doPrunePed <- function(ped, addMissingMates=FALSE, solveMultiGraph="use.all"){
     }
     ped
 }
-

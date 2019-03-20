@@ -342,7 +342,7 @@ test_getCommonAncestor <- function(){
     checkException(getCommonAncestor(fad, id=c("761", "bla")))
 }
 
-test_buildPed <- function(){
+test_buildPed <- function() {
     do.plot <- FALSE
     ## mbsub <- .getMinSub()
     PedDf <- mbsub[, c("famid", "id", "fatherid", "motherid", "sex")]
@@ -356,26 +356,28 @@ test_buildPed <- function(){
         switchPlotfun()
     }
     expect <- c(5, 26, 11, 12, 13)
-    tmp <- buildPed(fad, id=c(26, 13, 12, 11), prune=TRUE)
+    tmp <- buildPed(fad, id = c(26, 13, 12, 11), prune = TRUE)
     checkEquals(sort(tmp$id), sort(expect))
 
     expect <- c(23, 3, 24, 4, 25, 5, 26, 11, 1, 2)
-    tmp <- buildPed(fad, id=c(23, 11), prune=TRUE)
+    tmp <- buildPed(fad, id = c(23, 11), prune = TRUE)
     checkEquals(sort(tmp$id), sort(expect))
 
     ## build ped for individuals of family 14:
     ## pedigree for individual 447 should include individuals of a second
     ## branch, e.g. individual 26062
-    checkTrue(any(buildPed(fad, id="447")$id == "26062"))
+    checkTrue(any(buildPed(fad, id = "447")$id == "26062"))
     ## for individual 440 (father of 447) this second branch should be
     ## missing
-    checkTrue(!any(buildPed(fad, id="440")$id == "26062"))
+    checkTrue(!any(buildPed(fad, id = "440")$id == "26062"))
 
     checkException(buildPed(fad, family = 2))
     res <- buildPed(fad, family = "5")
     res_2 <- family(fad, family = "5")
     checkTrue(nrow(res) < nrow(res_2))
     res_2 <- removeSingletons(res_2)
+    res_2 <- res_2[order(res_2$id), ]
+    res <- res[order(res$id), ]
     checkEquals(res, res_2)
 }
 
@@ -489,4 +491,3 @@ test_genevieve_reported_errors <- function() {
 
     fad <- FAData(ped3)
 }
-
