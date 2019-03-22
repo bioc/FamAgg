@@ -1,3 +1,10 @@
+CHANGES IN VERSION 1.11.4
+-------------------------
+
+o Fix bug in buildPed with prune = TRUE that resulted in either a missing mother
+  or father in some complicated family structures.
+
+
 CHANGES IN VERSION 1.11.3
 -------------------------
 

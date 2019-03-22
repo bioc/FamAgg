@@ -456,15 +456,6 @@ setMethod("buildPed", "FAData",
                                      maxlevel = max.generations.up)
               ## add eventual missing mates for the ancestors:
               mismate <- doGetMissingMate(ped, id = ancs)
-              ## ## search horizontally for missing mates (incl. serial monogamy):
-              ## idmates <- c(id)
-              ## repeat {
-              ##     nrmates <- length(idmates)
-              ##     idmates <- unique(c(id, doGetMissingMate(ped, id = idmates)))
-              ##     if( length(idmates) == nrmates )
-              ##         break
-              ## }
-              ## allids <- unique(c(ancs, idmates, mismate))
               allids <- unique(c(ancs, id, mismate))
               ## next get all children:
               chlds <- doGetChildren(ped, id = allids,
@@ -480,7 +471,7 @@ setMethod("buildPed", "FAData",
               ped[!(ped$mother %in% ped$id), "mother"] <- NA
               ped[!(ped$father %in% ped$id), "father"] <- NA
               ped <- removeSingletons(ped)
-              return(ped)
+              ped
           })
 
 
@@ -848,43 +839,43 @@ setMethod("fsirTest", "FAData",
 ## if id is not NULL: build the pedigree around that id and plot that.
 ## highlight.ids: character vector of ids or named list with character vector(s)
 setMethod("plotPed", "FAData",
-          function(object, id=NULL, family=NULL, filename=NULL,
-                   device="plot", symbol.related=NA, proband.id=NULL,
-                   highlight.ids=NULL, only.phenotyped=FALSE,
-                   label1=age(object), label2=NULL, label3=NULL, ...){
+          function(object, id = NULL, family = NULL, filename = NULL,
+                   device = "plot", symbol.related = NA, proband.id = NULL,
+                   highlight.ids = NULL, only.phenotyped = FALSE,
+                   label1 = age(object), label2 = NULL, label3 = NULL, ...) {
               ## if id was defined build the pedigree for that individual,
               ## otherwise plot the full family.
               Args <- list(...)
-              if(!is.null(id)){
+              if (!is.null(id)) {
                   ## only extract arguments we might need for buildPed:
                   max.generations.up <- 3
                   max.generations.down <- 16
                   prune <- FALSE
-                  if(any(names(Args) == "max.generations.up"))
+                  if (any(names(Args) == "max.generations.up"))
                       max.generations.up <- Args$max.generations.up
-                  if(any(names(Args) == "max.generations.down"))
+                  if (any(names(Args) == "max.generations.down"))
                       max.generations.down <- Args$max.generations.down
-                  if(any(names(Args) == "prune"))
+                  if (any(names(Args) == "prune"))
                       prune <- Args$prune
-                  fam <- buildPed(object, id=id,
-                                  max.generations.up=max.generations.up,
-                                  max.generations.down=max.generations.down,
-                                  prune=prune)
-              }else{
-                  fam <- family(object, id=id, family=family)
+                  fam <- buildPed(object, id = id,
+                                  max.generations.up = max.generations.up,
+                                  max.generations.down = max.generations.down,
+                                  prune = prune)
+              } else {
+                  fam <- family(object, id = id, family = family)
               }
-              if(nrow(fam)==0)
+              if (nrow(fam) == 0)
                   stop("No data left for plotting after sub-setting.")
               ## check if we've got affected
-              if(any(colnames(fam)=="affected")){
+              if (any(colnames(fam) == "affected")) {
                   affected <- fam[, "affected"]
                   haveAffected <- TRUE
-              }else{
+              } else {
                   affected <- rep(NA, nrow(fam))
                   names(affected) <- as.character(fam$id)
                   haveAffected <- FALSE
               }
-              if(is.null(symbol.related))
+              if (is.null(symbol.related))
                   symbol.related <- NA
               ## checking labels.
               label1 <- .checkLabels(label1, fam)
@@ -893,67 +884,67 @@ setMethod("plotPed", "FAData",
               ## do not have affected... obviously...
               is.proband <- rep(FALSE, nrow(fam))
               names(is.proband) <- as.character(fam$id)
-              if(!missing(proband.id)){
+              if (!missing(proband.id)) {
                   proband.id <- as.character(proband.id)
                   is.proband[names(is.proband) %in% proband.id] <- TRUE
-                  if(sum(is.proband)!=length(proband.id))
+                  if (sum(is.proband) != length(proband.id))
                       warning("Not all probands specified in proband.id are ",
                               "in the pedigree!")
               }
               text.inside.symbol <- rep("", nrow(fam))
               names(text.inside.symbol) <- as.character(fam$id)
-              if(!is.null(id)){
+              if (!is.null(id)) {
                   ## get individuals that share kinship
-                  related <- shareKinship(object, id=id)
+                  related <- shareKinship(object, id = id)
                   related <- related[related %in% fam$id]
                   ## could also use shareKinship(object, id), but that's not
                   ## that efficient!
                   related <- related[related %in% names(text.inside.symbol)]
                   text.inside.symbol[related] <- symbol.related
               }
-              text2.below.symbol=NULL
-              text3.below.symbol=NULL
-              text4.below.symbol=NULL
-              if(!is.null(highlight.ids)){
-                  if(is.character(highlight.ids)){
+              text2.below.symbol = NULL
+              text3.below.symbol = NULL
+              text4.below.symbol = NULL
+              if (!is.null(highlight.ids)) {
+                  if (is.character(highlight.ids)) {
                       highlight.ids <- list(`*`=highlight.ids)
                   }
-                  if(is.list(highlight.ids)){
+                  if (is.list(highlight.ids)) {
                       ## support at max 3 highlight lines.
-                      for(i in 1:min(c(3, length(highlight.ids)))){
-                          if(is.null(names(highlight.ids)[i])){
+                      for (i in 1:min(c(3, length(highlight.ids)))) {
+                          if (is.null(names(highlight.ids)[i])) {
                               symb <- "*"
-                          }else{
+                          } else {
                               symb <- names(highlight.ids)[i]
                           }
                           texts <- rep("", nrow(fam))
                           names(texts) <- as.character(fam$id)
                           texts[names(texts) %in% highlight.ids[[i]]] <- symb
-                          if(i==1)
+                          if (i == 1)
                               text2.below.symbol <- texts
-                          if(i==2)
+                          if (i == 2)
                               text3.below.symbol <- texts
-                          if(i==3)
+                          if (i == 3)
                               text4.below.symbol <- texts
                       }
-                  }else{
+                  } else {
                       warning("Discarding argument highlight.ids. It",
                               " should be a character vector of ids or a",
                               " (named) list of character vectors with ids.")
                   }
               }
               ## Note that label1 to label3 has precedence to any other argument!
-              if(!is.null(label2))
+              if (!is.null(label2))
                   text2.below.symbol <- label2
-              if(!is.null(label3))
+              if (!is.null(label3))
                   text3.below.symbol <- label3
               ## If we want to plot only phenotyped individuals...
-              if(only.phenotyped & haveAffected){
+              if (only.phenotyped & haveAffected){
                   ## use the buildPed...
                   keepIds <- fam[!is.na(fam[, "affected"]), "id"]
                   subped <- subPedigree(fam, id=as.character(keepIds), all=FALSE)
                   plotMe <- as.character(fam$id) %in% as.character(subped$id)
-              }else{
+              } else {
                   plotMe <- rep(TRUE, nrow(fam))
               }
               ## OK, now plot!!!

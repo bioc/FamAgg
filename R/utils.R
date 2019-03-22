@@ -91,14 +91,13 @@ doGetChildren <- function(ped, id=NULL, maxlevel=16){
 ## and if yes add them to the returned list of ids.
 ## returned value contains
 ## eventually missing mates.
-doGetMissingMate <- function(ped, id){
+doGetMissingMate <- function(ped, id) {
     if(is.null(id))
         stop("Al least one id has to be specified")
     newids <- c(ped[which(ped$father %in% id), "mother"],
                 ped[which(ped$mother %in% id), "father"])
     unique(newids)
 }
-
 
 writePed <- function(ped, file){
     Sexes <- as.numeric(sanitizeSex(ped$sex))
@@ -268,39 +267,63 @@ sanitizePed <- function(ped){
     ped
 }
 
-## find the subPedigree (smallest pedigree) includin the individuals specified
-## with id and all eventually needed additionals
-subPedigree <- function(ped, id=NULL, all=TRUE){
+#' find the subPedigree (smallest pedigree) including the individuals specified
+#' with id and all eventually needed additionals
+#'
+#' @param ped pedigree `data.frame`.
+#'
+#' @param id `character` with the IDs of the individuals.
+#'
+#' @param all `logical(1)`
+#'
+#' @md
+#'
+#' @noRd
+#'
+#' @author Johannes Rainer
+subPedigree <- function(ped, id = NULL, all = TRUE) {
     CL <- class(ped)
     ## handling for pedigree and pedigreeList classes: unfortunately these
     ## are not correct classes, otherwise I could define methods instead of
     ## a function...
-    if(is(ped, "pedigree") | is(ped, "pedigreeList")){
+    if (is(ped, "pedigree") | is(ped, "pedigreeList")) {
         ped <- ped2df(ped)
     }
     ped <- checkPedCol(ped)
-    if(is.null(id))
+    if (is.null(id))
         stop("id is missing!")
     id <- as.character(id)
-    subgr <- connectedSubgraph(ped2graph(ped), nodes=id, mode="all",
-                               all.nodes=all, ifnotfound=NA)
-    if(!is(subgr, "igraph")){
+    subgr <- connectedSubgraph(ped2graph(ped), nodes = id, mode = "all",
+                               all.nodes = all, ifnotfound = NA)
+    if (!is(subgr, "igraph")) {
         stop("No common pedigree for the submitted individuals found!")
     }
     inds <- names(V(subgr))
-    ## get missing mates:
-    inds <- unique(c(inds, doGetMissingMate(ped, id=inds)))
+    ## get missing mates
+    inds <- unique(c(inds, doGetMissingMate(ped, id = inds)))
     subped <- ped[inds, ]
     subped <- removeSingletons(subped)
     ## fix founders.
     subped[!(subped$father %in% subped$id), "father"] <- NA
     subped[!(subped$mother %in% subped$id), "mother"] <- NA
+    ## Fix if we have individuals with a mother or a father, but not both.
+    idx <- which(is.na(subped$father) != is.na(subped$mother))
+    if (length(idx)) {
+        idx_ped <- match(subped$id[idx], ped$id)
+        id_msng <- ped$mother[idx_ped][is.na(subped$mother[idx])]
+        id_msng <- c(id_msng, ped$father[idx_ped][is.na(subped$father[idx])])
+        subped$father[idx] <- ped$father[idx_ped]
+        subped$mother[idx] <- ped$mother[idx_ped]
+        if (length(id_msng)) {
+            subped <- rbind(subped, ped[match(id_msng, ped$id), ])
+            subped[!(subped$father %in% subped$id), "father"] <- NA
+            subped[!(subped$mother %in% subped$id), "mother"] <- NA
+        }
+    }
     if(CL == "pedigree" | CL == "pedigreeList")
         subped <- df2ped(subped)
     subped
 }
-
-
 
 
 ## find the (eventually smallest) connected subgraph of all specified
