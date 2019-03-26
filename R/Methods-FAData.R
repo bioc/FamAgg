@@ -873,6 +873,7 @@ setMethod("plotPed", "FAData",
               }
               if(nrow(fam)==0)
                   stop("No data left for plotting after sub-setting.")
+              fam <- fam[order(match(fam$id, pedigree(object)$id)), ]
               ## check if we've got affected
               if(any(colnames(fam)=="affected")){
                   affected <- fam[, "affected"]
