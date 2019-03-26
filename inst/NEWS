@@ -1,3 +1,9 @@
+CHANGES IN VERSION 1.11.5
+-------------------------
+
+o Ensure same ordering of pedigree and provided labels in buildPed (issue #19).
+
+
 CHANGES IN VERSION 1.11.4
 -------------------------
 
