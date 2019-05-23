@@ -135,16 +135,12 @@ FAData(pedigree, age, trait, traitName, header=FALSE, sep="\t", id.col="id",
 
   \item{family.col}{
     For \code{FAData}: the name of the column containing the id of the
-    families, if argument \code{pedigree} is a \code{character(1)}
-    specifying the file name from which the pedigree should be read and
-    \code{header} is \code{FALSE}.
+    families.
   }
 
   \item{father.col}{
     For \code{FAData}: the name of the column containing the id of the
-    father, if argument \code{pedigree} is a \code{character(1)}
-    specifying the file name from which the pedigree should be read and
-    \code{header} is \code{FALSE}.
+    father.
   }
 
   \item{filename}{
@@ -193,9 +189,7 @@ FAData(pedigree, age, trait, traitName, header=FALSE, sep="\t", id.col="id",
 
   \item{id.col}{
     For \code{FAData}: the name of the column containing the id of the
-    individuals, if argument \code{pedigree} is a \code{character(1)}
-    specifying the file name from which the pedigree should be read and
-    \code{header} is \code{FALSE}.
+    individuals.
   }
 
   \item{label1}{
@@ -233,9 +227,7 @@ FAData(pedigree, age, trait, traitName, header=FALSE, sep="\t", id.col="id",
 
   \item{mother.col}{
     For \code{FAData}: the name of the column containing the id of the
-    mother, if argument \code{pedigree} is a \code{character(1)}
-    specifying the file name from which the pedigree should be read and
-    \code{header} is \code{FALSE}.
+    mother.
   }
 
   \item{na.rm}{
@@ -289,9 +281,7 @@ FAData(pedigree, age, trait, traitName, header=FALSE, sep="\t", id.col="id",
 
   \item{sex.col}{
     For \code{FAData}: the name of the column spefifying the sex of the
-    individuals, if argument \code{pedigree} is a \code{character(1)}
-    representing the file name from which the pedigree should be read and
-    \code{header} is \code{FALSE}.
+    individuals.
   }
 
   \item{symbol.related}{
@@ -556,7 +546,7 @@ FAData(pedigree, age, trait, traitName, header=FALSE, sep="\t", id.col="id",
 
       For \code{HaploPainter} plotting and \code{device = "txt"} the name
       of the file to which the plotting data has been exported is returned.
-      
+
       See \code{\link{doPlotPed}} for more information.
     }
 
@@ -759,4 +749,3 @@ plotPed(fad, id=6)
 
 }
 \keyword{classes}
-
