@@ -183,19 +183,21 @@ ks2paint <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
     ## use strheight to determine the size of the string.
     ## pos: y: Coords$y-Coores$boxh-strheight
     if(!is.null(text1.below.symbol)){
-        strh <- strheight("0")
-        text(x=Coords$x, y=(Coords$y+Coords$boxh-strh-strh/10), pos=1,
-             labels=text1.below.symbol, cex=Cex-0.2)
+        strh <- strheight("1g", cex=Cex)
+        ## Text below age line. The use of the adj parameter is similar to the
+        ## kinship2 source code (plot.pedigree.R v1.8.4, line 233).
+        text(x=Coords$x, y=(Coords$y+Coords$boxh-2*strh),
+             labels=text1.below.symbol, cex=0.8*Cex, adj=c(0.5,1))
     }
     if(!is.null(text2.below.symbol)){
         ## top left
         text(x=(Coords$x-Coords$boxw/8), y=Coords$y, pos=2,
-             labels=text2.below.symbol, cex=Cex-0.2)
+             labels=text2.below.symbol, cex=0.8*Cex)
     }
     if(!is.null(text3.below.symbol)){
         ## top right
         text(x=(Coords$x+Coords$boxw/8), y=Coords$y, pos=4,
-             labels=text3.below.symbol, cex=Cex-0.2)
+             labels=text3.below.symbol, cex=0.8*Cex)
     }
     if(!is.null(text4.below.symbol))
         warning("ks2paint does not support text4.below.symbol.")
