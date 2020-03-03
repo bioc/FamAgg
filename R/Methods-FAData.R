@@ -699,7 +699,7 @@ setMethod("fsir", "FAData", function(object, trait=NULL, lambda=NULL,
     ## Check timeInStrata
     if(is.null(timeInStrata))
         stop("timeInStrata missing!")
-    if(class(timeInStrata)!="matrix")
+    if (!is.matrix(timeInStrata))
         stop("timeInStrata has to be a matrix!")
     if(nrow(timeInStrata) != length(object$id))
         stop(paste0("timeInStrata has to have the same number of rows as",

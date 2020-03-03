@@ -505,7 +505,7 @@ setMethod("result", "FAStdIncidenceRateResults", function(object, method="BH"){
 ##
 setMethod("fsir", "FAStdIncidenceRateResults",
           function(object, ...){
-              if(length(object@sim) == 0)
+              if(!length(object@sim))
                   return(NULL)
               return(object@sim$fsir)
           })
@@ -604,6 +604,3 @@ setReplaceMethod("trait", "FAStdIncidenceRateResults", function(object, value){
     object@traitname <- character()
     return(object)
 })
-
-
-
