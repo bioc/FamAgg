@@ -3,3 +3,4 @@ readme.org
 .git
 ^\.travis\.yml$
 local_data
+^\.github$
