@@ -1,3 +1,8 @@
+CHANGES in VERSION 1.17.1
+
+o Fix issue #20 (binary trait drops names upon conversion).
+
+
 CHANGES IN VERSION 1.13.3
 -------------------------
 

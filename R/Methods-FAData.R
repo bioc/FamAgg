@@ -334,7 +334,7 @@ setMethod("trait", "FAData", function(object, na.rm=FALSE){
 ## trait will be matched to the ids in the pedigree of object.
 setReplaceMethod("trait", "FAData", function(object, value) {
     if (is.logical(value))
-        value <- as.numeric(value)
+        value <- value + 0L
     if (is.numeric(value)) {
         ## check that trait is 0, 1, NA
         if (!all(unique(value) %in% c(0, 1, NA)))

@@ -46,6 +46,17 @@ test_construct <- function(){
     phenoIds <- phenotypedIndividuals(fad)
     checkEquals(phenoIds, as.character(ped$id[!is.na(ped$affected)]))
 
+    ## check if a logical trait is handled properly
+    tcancerrandom <- sample(c(rep(T, 3), rep(F, 7), NA), size=length(tcancer),
+                            replace = TRUE)
+    names(tcancerrandom) <- names(tcancer)
+    fad1 <- FAData(pedigree=mbped, trait=tcancerrandom)
+    fad2 <- FAData(pedigree=mbped)
+    trait(fad2) <- tcancerrandom
+    checkEquals(trait(fad1), trait(fad2))
+    tcint <- as.integer(tcancerrandom)
+    names(tcint) <- names(tcancerrandom)
+    checkEquals(trait(fad1), tcint)
 }
 
 test_FAData_from_file <- function(){
