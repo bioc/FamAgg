@@ -362,3 +362,45 @@ test_removeSingletons <- function() {
     pedSub <- removeSingletons(ped)
     checkEquals(trait(pedSub), trait[pedSub$id])
 }
+
+test_kinshipPairs <- function() {
+
+    checkException(kinshipPairs(4), "FAData")
+    checkException(kinshipPairs(minFad, condition = function(z) z * z),
+                   "did not return")
+    checkException(kinshipPairs(minFad, family = "other"), "families")
+    res <- kinshipPairs(minFad)
+    extract_values <- function(data, x) {
+        res <- numeric(nrow(x))
+        for (i in seq_len(nrow(x)))
+            res[i] <- data[x[i, 1], x[i, 2]]
+        res
+    }
+    ks <- extract_values(kinship(minFad), res)
+    checkTrue(all(ks >= 0.25))
+
+    res <- kinshipPairs(minFad, duplicates = "first")
+    ## Each individual should be present only once!
+    tab <- table(as.character(res))
+    checkTrue(all(tab == 1))
+
+    res_2 <- kinshipPairs(minFad, duplicates = "last")
+    tab <- table(as.character(res_2))
+    checkTrue(all(tab == 1))
+
+    res <- kinshipPairs(minFad, duplicates = "first",
+                        condition = function(z) z < 0.125)
+    ks <- extract_values(kinship(minFad), res)
+    checkTrue(all(ks < 0.125))
+    tab <- table(as.character(res))
+    checkTrue(all(tab == 1))
+
+    ## Subset by family, check that only IDs from that family are reported.
+    res <- kinshipPairs(minFad, family = 1:4)
+    checkTrue(all(as.character(res) %in% minFad$id[minFad$family %in% 1:4]))
+
+    ## Subset by ID, check that only these IDs are reported.
+    ids <- 1:40
+    res <- kinshipPairs(minFad, id = ids)
+    checkTrue(all(as.character(res) %in% ids))
+}

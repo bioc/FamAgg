@@ -1,4 +1,11 @@
+CHANGES in VERSION 1.19.1
+-------------------------
+
+o Add kinshipPairs function
+
+
 CHANGES in VERSION 1.17.1
+-------------------------
 
 o Fix issue #20 (binary trait drops names upon conversion).
 

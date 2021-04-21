@@ -7,7 +7,7 @@ importFrom("stats", "density")
 importFrom("stats", "binom.test", "dbinom", "pbinom")
 importFrom(igraph, graph, distances, shortest_paths, V, induced_subgraph, clusters)
 importClassesFrom(Matrix, "dsCMatrix")
-importMethodsFrom(Matrix, as.matrix, colSums, colMeans, "[")
+importMethodsFrom(Matrix, as.matrix, colSums, colMeans, "[", which)
 importFrom(BiocGenerics, "density")
 importFrom(gap, pfc.sim)
 import(kinship2)
@@ -56,5 +56,4 @@ exportMethods("familialIncidenceRate", "familialIncidenceRateTest", "fsir",
               "fsirTest", "genealogicalIndexTest", "kinshipSumTest",
               "kinshipGroupTest", "probabilityTest", "runSimulation")
 export("binomialTest")
-
-
+export("kinshipPairs")

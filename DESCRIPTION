@@ -1,7 +1,7 @@
 Package: FamAgg
 Type: Package
 Title: Pedigree Analysis and Familial Aggregation
-Version: 1.19.0
+Version: 1.19.1
 Authors@R: c(person(given = "Johannes", family = "Rainer",
 	   email = "johannes.rainer@eurac.edu",
 	   role = c("aut", "cre"),
@@ -44,3 +44,4 @@ biocViews: Genetics
 License: MIT + file LICENSE
 Copyright: Haplopainter1.043.pl (http://haplopainter.sourceforge.net) Copyright (c) 2004-2008 Holger Thiele
 NeedsCompilation: no
+RoxygenNote: 7.1.1

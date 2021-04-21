@@ -2,9 +2,8 @@
 ## A
 setGeneric("affectedIndividuals", function(object)
     standardGeneric("affectedIndividuals"))
-if(!isGeneric("affectedKinshipGroups"))
-    setGeneric("affectedKinshipGroups", function(object)
-        standardGeneric("affectedKinshipGroups"))
+setGeneric("affectedKinshipGroups", function(object)
+    standardGeneric("affectedKinshipGroups"))
 setGeneric("age", function(object)
     standardGeneric("age"))
 setGeneric("age<-", function(object, value)
@@ -25,9 +24,8 @@ setGeneric("countGenerations", function(object, id=NULL, ...)
 ## E
 setGeneric("estimateGenerations", function(object, family=NULL, ...)
     standardGeneric("estimateGenerations"))
-if(!isGeneric("export"))
-    setGeneric("export", function(object, con, format, ...)
-        standardGeneric("export"))
+setGeneric("export", function(object, ...)
+    standardGeneric("export"))
 
 ## F
 setGeneric("familialIncidenceRate", function(object, trait=NULL,
@@ -155,5 +153,3 @@ setGeneric("trait<-", function(object, value)
 ## X
 ## Y
 ## Z
-
-
