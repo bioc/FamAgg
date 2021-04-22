@@ -375,6 +375,7 @@ subPedigree(ped, id=NULL, all=TRUE)
   \code{\linkS4class{FAKinGroupResults}},
   \code{\linkS4class{FAKinSumResults}},
   \code{\link{PedigreeAnalysis}}
+  \code{\link{kinshipPairs}}
 }
 \examples{
 ##########################
@@ -479,4 +480,3 @@ plot(sgraph)
 
 }
 \keyword{classes}
-
