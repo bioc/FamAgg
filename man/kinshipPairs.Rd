@@ -116,7 +116,7 @@ cor_rel
 cor_unrel
 
 ## We don't see a clear difference in the correlation, thus, the age (as
-## expected) age has no familial component.
+## expected) has no familial component.
 }
 \references{
 Ziegler A., Koenig I. R. (2010). Familiality, Heristability, and Segregation

@@ -925,7 +925,7 @@ doPrunePed <- function(ped, addMissingMates=FALSE, solveMultiGraph="use.all"){
 #' cor_unrel
 #'
 #' ## We don't see a clear difference in the correlation, thus, the age (as
-#' ## expected) age has no familial component.
+#' ## expected) has no familial component.
 kinshipPairs <- function(x, condition = function(x) x >= 0.25,
                          duplicates = c("keep", "first", "last", "random"),
                          id = NULL, family = NULL) {
@@ -940,7 +940,9 @@ kinshipPairs <- function(x, condition = function(x) x >= 0.25,
     ks <- kinship(x)
     if (length(id)) {
         is_id <- rownames(ks) %in% id
-        ks <- ks[is_id, is_id]
+        if (!any(is_id))
+            stop("None of the specified individuals found")
+        ks <- ks[is_id, is_id, drop = FALSE]
     }
     res <- condition(ks)
     if (!length(dim(res)) || ncol(ks) != ncol(res) ||
@@ -948,8 +950,6 @@ kinshipPairs <- function(x, condition = function(x) x >= 0.25,
         stop("'condition' function did not return a 'logical' 'matrix' with ",
              "dimensions matching the kinship matrix in 'x'")
     res[lower.tri(res, diag = TRUE)] <- NA
-    if (!length(dim(res)) || nrow(res) < 1)
-        return(matrix(nrow = 0, ncol = 2))
     keep <- which(res, arr.ind = TRUE, useNames = FALSE)
 
     if (nrow(keep)) {
