@@ -217,85 +217,100 @@ setMethod("runSimulation", "FAKinGroupResults", function(object, nsim=50000,
     ## number of affected cases. Then, for each group, iteratively determine
     ## the number of individuals from the group which have been labeled as
     ## affected in the simulation and their kinship value.
-    ExpRatio <- rep(0, length(affectedKins))
-    ExpKin <- rep(0, length(affectedKins))
-    names(ExpRatio) <- names(affectedKins)
-    names(ExpKin) <- names(affectedKins)
-    ## parallelize the simulations?
-    ## in case: generate a list with the sampled affected ids and run a
-    ## mclapply over than.
-    ## the speed gain might however not be that large... so we don't do it yet.
-    ## for parallelization its better to perform the sampling once!
-    if(is.null(strata)){
-        Sims <- lapply(1:nsim, function(z){
-            return(sample(phenotypedIds, length(affectedIds)))
-        })
-    }else{
-        affStrataCounts <- table(strata[affectedIds])
-        affStrataCounts <- affStrataCounts[affStrataCounts > 0]
-        Sims <- lapply(1:nsim, function(z){
-            idx <- stratsample(strata, counts=affStrataCounts)
-            return(phenotypedIds[idx])
-        })
-    }
-    ##        BigRes <- bplapply(Sims, BPPARAM=BPPARAM, FUN=function(x){
-    BigRes <- lapply(Sims, FUN=function(x){
-        ExpRes <- do.call(rbind, lapply(affectedKins, function(z){
-            Res <- c(0, 0, 0)
-            expectedAffInKin <- intersect(x, z$phe)
-            Res[3] <- length(expectedAffInKin)
-            if(length(expectedAffInKin) >= length(z$aff)){
-                Res[1] <- 1
-            }
-            ## check frequency...
-            if(length(expectedAffInKin) >= 2){
-                ## that's the slowest part of the function... subsetting of the
-                ## kinship matrix...
-                ## we get some speedup if we subset a matrix, not a Matrix!
-                expectedAffInKin <- match(expectedAffInKin,
-                                          colnames(kinPhenotyped))
-                expectedKin <- kinPhenotyped[expectedAffInKin, expectedAffInKin]
-                diag(expectedKin) <- NA
-                ## get the table with the frequencies of kinship values...
-                expectedKinFreqs <- table(as.vector(expectedKin))
-                observedKinFreqs <- z$kinfreq
-                if(length(expectedKinFreqs) > 0 & length(observedKinFreqs) > 0){
-                    ## names of the table are the kinship values, ordered increasingly by size.
-                    expKinShipValue <- names(expectedKinFreqs[length(expectedKinFreqs)])
-                    obsKinShipValue <- names(observedKinFreqs[length(observedKinFreqs)])
-                    if(as.numeric(expKinShipValue) >= as.numeric(obsKinShipValue)){
-                        ## if the kinship value is the same, compare the counts.
-                        if(expKinShipValue==obsKinShipValue){
-                            if(expectedKinFreqs[expKinShipValue] >=
-                               observedKinFreqs[obsKinShipValue])
+    ExpRatio <- ExpKin <- rep(0, length(affectedKins))
+    expTable <- expDensity <- lapply(1:length(affectedKins), function(x) NULL )
+
+    nr.sim.todo <- nsim
+    ## Step size.
+    ## We compute small chunks of simulated data in order to keep the memory
+    ## footprint low. This involves strategies to add data to fixed vectors and
+    ## compute incremental tables and densities. A set of tables is ultimately
+    ## transformed to a histogram.
+
+    nr.inc.sim <- 1000
+    while( nr.sim.todo>0 ) {
+        ## Last simulation loop: run only the leftover number of steps.
+        if( nr.sim.todo<nr.inc.sim )
+            nr.inc.sim <- nr.sim.todo
+        if(is.null(strata)){
+            Sims <- lapply(1:nr.inc.sim, function(z){
+                return(sample(phenotypedIds, length(affectedIds)))
+            })
+        }else{
+            affStrataCounts <- table(strata[affectedIds])
+            affStrataCounts <- affStrataCounts[affStrataCounts > 0]
+            Sims <- lapply(1:nr.inc.sim, function(z){
+                idx <- stratsample(strata, counts=affStrataCounts)
+                return(phenotypedIds[idx])
+            })
+        }
+
+        BigRes <- list()
+        for( i in 1:nr.inc.sim ) {
+            ExpRes <- do.call(rbind, lapply(affectedKins, FUN=function(z){
+                Res <- c(0, 0, 0)
+                expectedAffInKin <- intersect(Sims[[i]], z$phe)
+                Res[3] <- length(expectedAffInKin)
+                if(length(expectedAffInKin) >= length(z$aff)){
+                    Res[1] <- 1
+                }
+                ## check frequency...
+                if(length(expectedAffInKin) >= 2){
+                    ## that's the slowest part of the function... subsetting of the
+                    ## kinship matrix...
+                    ## we get some speedup if we subset a matrix, not a Matrix!
+                    expectedAffInKin <- match(expectedAffInKin,
+                                              colnames(kinPhenotyped))
+                    expectedKin <- kinPhenotyped[expectedAffInKin, expectedAffInKin]
+                    diag(expectedKin) <- NA
+                    ## get the table with the frequencies of kinship values...
+                    expectedKinFreqs <- table(as.vector(expectedKin))
+                    observedKinFreqs <- z$kinfreq
+                    if(length(expectedKinFreqs) > 0 & length(observedKinFreqs) > 0){
+                        ## names of the table are the kinship values, ordered increasingly by size.
+                        expKinShipValue <- names(expectedKinFreqs[length(expectedKinFreqs)])
+                        obsKinShipValue <- names(observedKinFreqs[length(observedKinFreqs)])
+                        if(as.numeric(expKinShipValue) >= as.numeric(obsKinShipValue)){
+                            ## if the kinship value is the same, compare the counts.
+                            if(expKinShipValue==obsKinShipValue){
+                                if(expectedKinFreqs[expKinShipValue] >=
+                                   observedKinFreqs[obsKinShipValue])
+                                    Res[2] <- 1
+                            }else{
+                                ## means it's larger, so add +1
                                 Res[2] <- 1
-                        }else{
-                            ## means its larger, so add +1
-                            Res[2] <- 1
+                            }
                         }
                     }
                 }
-            }
-            return(Res)
-        }))
-        return(ExpRes)
-    })
-    ## BigRes is now a list, length nsim, each element being a matrix, ncol=2,
-    ## nrow=length affectedKins.
-    ExpRatio <- colSums(do.call(rbind, lapply(BigRes,
-                                              function(simRes){simRes[, 1]})))
-    ExpKin <- colSums(do.call(rbind, lapply(BigRes,
-                                            function(simRes){simRes[, 2]})))
-    ExpVals <- do.call(rbind, lapply(BigRes, function(simRes){simRes[, 3]}))
-    ExpVals <- split(t(ExpVals), f=names(affectedKins))
-    expDensity <- lapply(ExpVals, density)
-    expHist <- lapply(ExpVals, hist, plot=FALSE)
-    expDensity <- expDensity[names(affectedKins)]
-    expHist <- expHist[names(affectedKins)]
-    names(ExpRatio) <- names(affectedKins)
-    names(ExpKin) <- names(affectedKins)
+                return(Res)
+            }))
+            ExpRatio <- ExpRatio + ExpRes[, 1]
+            ExpKin   <- ExpKin   + ExpRes[, 2]
+            BigRes <- append(BigRes, list(ExpRes[, 3]))
+        }
+        ## BigRes is now a list of length nr.inc.sim, each element a vector
+        ## of length affectedKins.
+        ExpVals <- do.call(rbind, BigRes)
+        ExpVals <- split(t(ExpVals), f=names(affectedKins))
+
+        for( i in 1:length(ExpVals) ) {
+            expDensity[[i]] <- inc.density(ExpVals[[i]], expDensity[[i]])
+            expTable[[i]] <- inc.table(ExpVals[[i]], expTable[[i]])
+        }
+        names(expDensity) <- names(expTable) <- names(ExpVals)
+
+        nr.sim.todo <- nr.sim.todo - nr.inc.sim
+    }
+    ## Done with the simulation. Compute the P values, histograms, and
+    ## densities and get the hell outta here.
     ExpRatio <- ExpRatio / nsim
     ExpKin <- ExpKin / nsim
+    names(ExpRatio) <- names(affectedKins)
+    names(ExpKin) <- names(affectedKins)
+    expDensity <- expDensity[names(affectedKins)]
+    expHist <- lapply(expTable, FUN=table2hist.int)
+    expHist <- expHist[names(affectedKins)]
 
     object@affectedKinshipGroups <- affectedKins
     object@sim <- list(pvalueKinship=ExpKin, pvalueRatio=ExpRatio,

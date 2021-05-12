@@ -181,34 +181,61 @@ significant.individuals.althyp = function(ks, affected, pool, nr.sim,
     }
     obs <- colSums(ks[affected, affected], na.rm=TRUE)
     names(obs) <- affected
-    ## return the actual values from the simulation.
-    if(is.null(strata)){
-        simVals <- bg.ks.distr(ks, affected, pool, nr.sim)
-    }else{
-        simVals <- bg.ks.distr.strat(ks, affected, pool, nr.sim, strata)
+
+    ## We compute small chunks of simulated data in order to keep the memory
+    ## footprint low. This involves strategies to compute incremental tables,
+    ## densities and histograms.
+    nr.sim.todo <- nr.sim
+    estimates <- matrix(0, nrow = length(obs), ncol = 2,
+                        dimnames = list(names(obs), c("freq", "pval")))
+    expDensity <- expHist <- expTable <- NULL
+    simCount <- 0
+    nr.inc.sim <- 1000
+    while( nr.sim.todo>0 ) {
+        ## Last simulation loop: run only the leftover number of steps.
+        if( nr.sim.todo<nr.inc.sim )
+            nr.inc.sim <- nr.sim.todo
+        ## return the actual values from the simulation.
+        if(is.null(strata)){
+            simVals <- bg.ks.distr(ks, affected, pool, nr.inc.sim)
+        }else{
+            simVals <- bg.ks.distr.strat(ks, affected, pool, nr.inc.sim, strata)
+        }
+        ## Perform all the incremental steps.
+        simCount <- simCount + length(simVals)
+        estimates <- estimates + do.call(rbind,lapply(obs, function(z){
+            oFreq <- sum(simVals == z)
+            oPval <- sum(simVals >= z)
+            return(c(freq = if( is.na(oFreq) ) 0 else oFreq,
+                     pval = if( is.na(oPval) ) 0 else oPval))
+        }))
+        expDensity <- inc.density(simVals, expDensity)
+        expHist <- inc.hist(simVals, expHist)
+        if( tableSimVals )
+            expTable <- inc.table(simVals, expTable)
+        nr.sim.todo <- nr.sim.todo - nr.inc.sim
     }
-    simCount <- length(simVals)
-    estimates <- do.call(rbind,lapply(obs, function(z){
-        oFreq <- sum(simVals == z)/simCount * 100
-        oPval <- sum(simVals >= z)/simCount
-        return(c(freq=oFreq, pval=oPval))
-    }))
+
+    if( expHist$nreplace>0 )
+        warning("Histogram approximation (overflow): replaced ",
+                expHist$nreplace, " value(s) with highest possible value, ",
+                expHist$breaks[length(expHist$breaks)])
     sumKin <- obs
     names(sumKin) <- affected
-    freqKin <- estimates[, "freq"]
-    freqKin[is.na(freqKin)] <- 0
+    freqKin <- estimates[, "freq"]*100/simCount
     names(freqKin) <- affected
-    pKin <- estimates[, "pval"]
+    pKin <- estimates[, "pval"]/simCount
     names(pKin) <- affected
     res <- list(sumKinship=sumKin,
                 pvalueKinship=pKin,
                 frequencyKinship=freqKin,
-                expDensity=density(simVals),
-                expHist=hist(simVals, breaks=128, plot=FALSE),
+                expDensity=expDensity,
+                expHist=expHist,
                 affected=affected)
     if (tableSimVals) {
-        res <- c(res, list(tableSimVals = table(simVals)))
+        res <- c(res, list(tableSimVals = expTable))
     }
+
     return(res)
 }
 
