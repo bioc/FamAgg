@@ -41,7 +41,7 @@
 \S4method{plotRes}{FAKinSumResults}(object, id=NULL, family=NULL,
                                      addLegend=TRUE, type="density", ...)
 
-\S4method{result}{FAKinSumResults}(object, method="BH")
+\S4method{result}{FAKinSumResults}(object, method="BH", cutoff=0.05)
 
 \S4method{runSimulation}{FAKinSumResults}(object, nsim=50000,
 strata=NULL, ...)
@@ -55,6 +55,16 @@ strata=NULL, ...)
 
   \item{addLegend}{
     For \code{plotRes}: if a legend should be added to the plot.
+  }
+
+  \item{cutoff}{
+    For \code{result}: P-value cutoff for clustering of kinship-related
+    affected individuals based on their \code{padj} value. Individuals with
+    p-value lower than this cutoff will be included in the grouping. Each group
+    will have at least one individual that satisfies this threshold, as this is
+    the one that started that group. Others are included due to kinship to this
+    particular individual. This is especially useful for large pedigrees with
+    inaccurate or missing family assignment.
   }
 
   \item{device}{
@@ -176,6 +186,10 @@ strata=NULL, ...)
       \code{"affected_id"}: the id of the affected individual for whom
       the test has been performed.
       \code{"family"}: the family id of the affected.
+      \code{"ksgrp"}: Numeric identifier that specifies a group of affected
+      individuals related by kinship. Group assignment starts with the top
+      ranking individual, \code{NA} is assigned to those that did not pass
+      the threshold \code{cutoff} supplied to \code{result}.
       \code{"kinship_sum"}: the sum of kinship values.
       \code{"freq"}: the expected frequency of the kinship sum from the
       simulation.
