@@ -41,7 +41,7 @@
 \S4method{plotRes}{FAKinSumResults}(object, id=NULL, family=NULL,
                                      addLegend=TRUE, type="density", ...)
 
-\S4method{result}{FAKinSumResults}(object, method="BH", cutoff=0.05)
+\S4method{result}{FAKinSumResults}(object, method="BH", cutoff=0.05, rmKinship=0)
 
 \S4method{runSimulation}{FAKinSumResults}(object, nsim=50000,
 strata=NULL, ...)
@@ -108,6 +108,11 @@ strata=NULL, ...)
     trait information). If \code{TRUE}, the function removes all
     non-phenotyped individuals, keeping only those that are required for
     the pedigree to be complete.
+  }
+
+  \item{rmKinship}{
+    For \code{result}: When assigning kinship groups, skip pairs of cases
+    with kinship <= \code{rmKinship}.
   }
 
   \item{strata}{
@@ -188,8 +193,13 @@ strata=NULL, ...)
       \code{"family"}: the family id of the affected.
       \code{"ksgrp"}: Numeric identifier that specifies a group of affected
       individuals related by kinship. Group assignment starts with the top
-      ranking individual, \code{NA} is assigned to those that did not pass
-      the threshold \code{cutoff} supplied to \code{result}.
+      ranking individual (by \code{padj}), \code{NA} is assigned to those
+      that did not pass the threshold \code{cutoff} supplied to \code{result}.
+      If parameter \code{rmKinship} is passed, assignment is restricted to
+      kinship values >\code{rmKinship} between the top ranking individual
+      that founded this group and the rest. Kinship-related individuals that
+      have a lower kinship value will be left unassigned, therefore they may
+      end up in a separate group.
       \code{"kinship_sum"}: the sum of kinship values.
       \code{"freq"}: the expected frequency of the kinship sum from the
       simulation.

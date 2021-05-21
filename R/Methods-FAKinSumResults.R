@@ -106,7 +106,7 @@ setMethod("runSimulation", "FAKinSumResults",
 
 ## results; get the results table.
 setMethod("result", "FAKinSumResults",
-          function(object, method="BH", cutoff=0.05){
+          function(object, method="BH", cutoff=0.05, rmKinship=0){
     method <- match.arg(method, p.adjust.methods)
     TraitName <- object@traitname
     if(length(TraitName)==0)
@@ -159,7 +159,8 @@ setMethod("result", "FAKinSumResults",
     res <- res[order(res$pvalue, -res$kinship_sum), , drop=FALSE]
     padj <- res$padj
     names(padj) <- rownames(res)
-    res$ksgrp <- define.result.groups.ks(kinship(object), padj, th=cutoff)
+    res$ksgrp <- define.result.groups.ks(kinship(object), padj, th=cutoff,
+                                         rmKinship=rmKinship)
     return(res)
 })
 
@@ -167,11 +168,12 @@ setMethod("result", "FAKinSumResults",
 ##' @param kin Kinship matrix.
 ##' @param padj Named vector with adjusted P values of all affected individuals.
 ##' @param th  Threshold of `padj` for inclusion of affected individuals.
+##' @param rmKinship Ignore all pairs with kinship <= rmKinship.
 ##' @return A named vector of group numbers or NAs, the names correspond to the
 ##' IDs of the affected individuals. An NA indicates that the affected
 ##' individual was above the threshold. The named vector corresponds to the
 ##' entries in vector `padj`.
-define.result.groups.ks <- function(kin, padj, th=0.05)
+define.result.groups.ks <- function(kin, padj, th=0.05, rmKinship=0)
 {
     stopifnot("Vector padj must have associated names."=!is.null(names(padj)))
     allIDs <- names(padj)
@@ -180,7 +182,8 @@ define.result.groups.ks <- function(kin, padj, th=0.05)
     grp    <- rep(NA, length(allIDs))
     names(grp) <- allIDs
     while( length(thIDs)>0 ) {
-        kinIDs <- intersect(doShareKinship(kin=kin, id=thIDs[1]), allIDs)
+        kinIDs <- intersect(
+            doShareKinship(kin=kin, id=thIDs[1], rmKinship=rmKinship), allIDs)
         ## Don't overwrite previously assigned group numbers.
         grp[is.na(grp) & names(grp) %in% kinIDs] <- grpNr
         grpNr <- grpNr + 1

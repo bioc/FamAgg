@@ -164,7 +164,10 @@ df2ped <- function(ped){
 ## finds related individuals, i.e. individuals sharing the same blood line.
 ## should we call this "shareBloodLine" or "shareKinship"
 ## ped has to be the data.frame that we get with the pedigree method.
-doShareKinship <- function(ped, kin, id){
+## Use `rmKinship` for fine control: omit all individuals with kinship less
+## than or equal to this paramter. Since it defaults to 0, all individuals
+## sharing blood line will be reported by default.
+doShareKinship <- function(ped, kin, id, rmKinship=0){
     if(missing(ped) & missing(kin))
         stop("ped or kin has to be submitted!")
     if(missing(id))
@@ -179,7 +182,7 @@ doShareKinship <- function(ped, kin, id){
         stop("id has to be present in ped or kin!")
     ## subset to id (which can be more than one)
     kin <- kin[id, , drop=FALSE]
-    related <- colnames(kin)[colSums(kin) > 0]
+    related <- colnames(kin)[colSums(kin>rmKinship)>0]
     related
 }
 

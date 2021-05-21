@@ -312,6 +312,18 @@ identify all individuals in the pedigree that share kinship with individual `4`.
 shareKinship(fad, id = "4")
 ```
 
+It is also possible to prune remote relatives. If we don't want to include grand
+children, (first) cousins and everbody else more remotely related to individual
+`4`, we use the option `rmKinship`. Essentially, only siblings, children, and
+parents remain.
+
+```{r  shareKinshipRm, message = FALSE }
+## Get all individuals sharing kinship with individual 4, but only with kinship
+## higher than 0.125 (exclude first cousins, grand children, great grand
+## parents etc, i.e. everybody with kinship 0.125 or lower)
+shareKinship(fad, id = "4", rmKinship = 0.125)
+```
+
 Next, we determine generations within the pedigree. Generations can only be
 estimated for a single family, since in most instances e.g. the year of birth is
 not available. Thus, generations are estimated considering the relation between

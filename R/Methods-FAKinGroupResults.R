@@ -429,7 +429,8 @@ setMethod("buildPed", "FAKinGroupResults",
           })
 
 ## this is to get all those that are related with any individuals of the group!!!
-setMethod("shareKinship", "FAKinGroupResults", function(object, id = NULL) {
+setMethod("shareKinship", "FAKinGroupResults",
+          function(object, id = NULL, rmKinship = 0) {
     if (is.null(id))
         stop("The id of the group has to be speficied!")
     affGroup <- affectedKinshipGroups(object)
@@ -439,7 +440,7 @@ setMethod("shareKinship", "FAKinGroupResults", function(object, id = NULL) {
     affGroup <- affGroup[[id]]
     allids <- unique(c(affGroup$aff, affGroup$pheno))
     ## get all individuals of the group...
-    doShareKinship(kin=kinship(object), id=allids)
+    doShareKinship(kin=kinship(object), id=allids, rmKinship=rmKinship)
 })
 
 ## plot the pedigree for the kinship group...

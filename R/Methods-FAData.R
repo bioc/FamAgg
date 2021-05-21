@@ -1027,10 +1027,10 @@ setMethod("getSiblings", "FAData",
           })
 
 setMethod("shareKinship", "FAData",
-          function(object, id=NULL){
+          function(object, id=NULL, rmKinship=0){
               if(is.null(id))
                   stop("id has to be specified!")
-              doShareKinship(kin=kinship(object), id=id)
+              doShareKinship(kin=kinship(object), id=id, rmKinship=rmKinship)
           })
 
 setMethod("getCommonAncestor", "FAData",

@@ -56,7 +56,7 @@
 
 \S4method{runSimulation}{FAKinGroupResults}(object, nsim=50000, strata=NULL)
 
-\S4method{shareKinship}{FAKinGroupResults}(object, id=NULL)
+\S4method{shareKinship}{FAKinGroupResults}(object, id=NULL, rmKinship=0)
 
 \S4method{trait}{FAKinGroupResults}(object) <- value
 
@@ -126,6 +126,12 @@
     pedigree containing only individuals in the kinship group
     (\code{prune=TRUE}); see details for more information. Note: the
     \code{plotPed} method does also support this parameter.
+  }
+
+  \item{rmKinship}{
+    For \code{shareKinship}: Restrict reporting pairs to those that have
+    kinship values >\code{rmKinship}. See \code{shareKinship} below for more
+    details.
   }
 
   \item{strata}{
@@ -284,7 +290,14 @@
     \item{shareKinship}{
       Returns a character vector with ids of all individuals that share
       kinship with any of the individuals in the kinship group
-      identified by the argument \code{id}.
+      identified by the argument \code{id}. If \code{rmKinship} is
+      specified, only individuals with a kinship >\code{rmKinship}
+      to the group defined by \code{id} will be reported. This esentially
+      restricts only the inclusion of individuals outside of the group.
+      Everyone inside the group will be reported independently of the
+      threshold defined by \code{rmKinship}. This feature has mainly been
+      implemented for reasons of API compatibility with the remaining
+      versions of \code{shareKinship}.
     }
 
     \item{trait<-}{

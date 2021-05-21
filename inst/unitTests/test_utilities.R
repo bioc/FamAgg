@@ -404,3 +404,49 @@ test_kinshipPairs <- function() {
     res <- kinshipPairs(minFad, id = ids)
     checkTrue(all(as.character(res) %in% ids))
 }
+
+test_shareKinship <- function() {
+    ## Have a look at the pedigree: plotPed(minFad, family = "4")
+    ## Lowest kinship value between 21 and the rest of this family (#4): 0.03125
+    fullKSIDs <- shareKinship(minFad, id="21")
+    checkTrue(length(fullKSIDs)==25)
+    ## Perform some checks on the kinship itself. a) Parents should share ks.
+    checkTrue(all(c("3", "24") %in% fullKSIDs))
+    ## b) siblings, too
+    checkTrue(all(c("22", "23") %in% fullKSIDs))
+    ## c) grandparents
+    checkTrue(all(c("4", "25") %in% fullKSIDs))
+    ## d) great-grandparents
+    checkTrue(all(c("1", "2") %in% fullKSIDs))
+    ## e) some more remote folks
+    checkTrue(all(c("7", "11", "14", "17", "20") %in% fullKSIDs))
+    ## f) but not any marry-ins
+    checkTrue(!any(c("26", "27", "28", "29") %in% fullKSIDs))
+    fullKSIDs2 <- shareKinship(minFad, id="21", rmKinship=0.01)
+    ## Should still be the same.
+    checkTrue(length(fullKSIDs2)==25 &&
+              length( setdiff(fullKSIDs, fullKSIDs2) )==0)
+    ## Ignore those with ks <= 0.03125
+    ids3125 <- shareKinship(minFad, id="21", rmKinship = 0.03125)
+    checkTrue(length(ids3125)==15)
+    ids625 <- shareKinship(minFad, id="21", rmKinship = 0.0625)
+    checkTrue(length(ids625)==7)
+    ids125 <- shareKinship(minFad, id="21", rmKinship = 0.125)
+    checkTrue(length(ids125)==5)
+    ids25 <- shareKinship(minFad, id="21", rmKinship = 0.25)
+    checkTrue(ids25=="21")
+    ## Higher kinship filtering results in nested subsets.
+    checkTrue(length(intersect(ids25, ids125))==1)
+    checkTrue(length(intersect(ids125, ids625))==5)
+    checkTrue(length(intersect(ids625, ids3125))==7)
+    checkTrue(length(intersect(ids3125, fullKSIDs))==15)
+    ## Get all relatives for "21" that have exactly kinship 0.125. Two ways.
+    ## 1. by definition of rmKinship
+    idsOnly125.1 <- setdiff(ids625, ids125)
+    ## 2. by querying the kinship matrix itself.
+    kin21 <- kinship(minFad)["21", ]
+    idsOnly125.2 <- names(kin21[kin21==0.125])
+    ## Sets must be identical.
+    checkTrue( all(idsOnly125.1 %in% idsOnly125.2) &
+               all(idsOnly125.2 %in% idsOnly125.1) )
+}
