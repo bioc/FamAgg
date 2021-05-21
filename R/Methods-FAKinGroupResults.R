@@ -218,20 +218,17 @@ setMethod("runSimulation", "FAKinGroupResults", function(object, nsim=50000,
     ## the number of individuals from the group which have been labeled as
     ## affected in the simulation and their kinship value.
     ExpRatio <- ExpKin <- rep(0, length(affectedKins))
-    expTable <- expDensity <- lapply(1:length(affectedKins), function(x) NULL )
+    expTable <- expDensity <- vector("list", length(affectedKins))
 
     nr.sim.todo <- nsim
-    ## Step size.
-    ## We compute small chunks of simulated data in order to keep the memory
-    ## footprint low. This involves strategies to add data to fixed vectors and
-    ## compute incremental tables and densities. A set of tables is ultimately
-    ## transformed to a histogram.
-
-    nr.inc.sim <- 1000
     while( nr.sim.todo>0 ) {
+        ## Step size.
+        ## We compute small chunks of simulated data in order to keep the memory
+        ## footprint low. This involves strategies to add data to fixed vectors
+        ## and compute incremental tables and densities. A set of tables is
+        ## ultimately transformed to a histogram.
         ## Last simulation loop: run only the leftover number of steps.
-        if( nr.sim.todo<nr.inc.sim )
-            nr.inc.sim <- nr.sim.todo
+        nr.inc.sim <- min(1000, nr.sim.todo)
         if(is.null(strata)){
             Sims <- lapply(1:nr.inc.sim, function(z){
                 return(sample(phenotypedIds, length(affectedIds)))
@@ -245,7 +242,7 @@ setMethod("runSimulation", "FAKinGroupResults", function(object, nsim=50000,
             })
         }
 
-        BigRes <- list()
+        BigRes <- vector("list", nr.inc.sim)
         for( i in 1:nr.inc.sim ) {
             ExpRes <- do.call(rbind, lapply(affectedKins, FUN=function(z){
                 Res <- c(0, 0, 0)
@@ -287,18 +284,17 @@ setMethod("runSimulation", "FAKinGroupResults", function(object, nsim=50000,
             }))
             ExpRatio <- ExpRatio + ExpRes[, 1]
             ExpKin   <- ExpKin   + ExpRes[, 2]
-            BigRes <- append(BigRes, list(ExpRes[, 3]))
+            BigRes[[i]] <- ExpRes[, 3]
         }
         ## BigRes is now a list of length nr.inc.sim, each element a vector
         ## of length affectedKins.
         ExpVals <- do.call(rbind, BigRes)
-        ExpVals <- split(t(ExpVals), f=names(affectedKins))
 
-        for( i in 1:length(ExpVals) ) {
-            expDensity[[i]] <- inc.density(ExpVals[[i]], expDensity[[i]])
-            expTable[[i]] <- inc.table(ExpVals[[i]], expTable[[i]])
+        for( i in 1:ncol(ExpVals) ) {
+            expDensity[[i]] <- inc.density(ExpVals[, i], expDensity[[i]])
+            expTable[[i]] <- inc.table(ExpVals[, i], expTable[[i]])
         }
-        names(expDensity) <- names(expTable) <- names(ExpVals)
+        names(expDensity) <- names(expTable) <- colnames(ExpVals)
 
         nr.sim.todo <- nr.sim.todo - nr.inc.sim
     }
