@@ -105,7 +105,8 @@ setMethod("runSimulation", "FAKinSumResults",
           })
 
 ## results; get the results table.
-setMethod("result", "FAKinSumResults", function(object, method="BH"){
+setMethod("result", "FAKinSumResults",
+          function(object, method="BH", cutoff=0.05, rmKinship=0){
     method <- match.arg(method, p.adjust.methods)
     TraitName <- object@traitname
     if(length(TraitName)==0)
@@ -119,6 +120,7 @@ setMethod("result", "FAKinSumResults", function(object, method="BH"){
             affected_id = NA,
             family = NA,
             affected = NA,
+            ksgrp = NA,
             kinship_sum = NA,
             freq = NA,
             pvalue = NA,
@@ -147,16 +149,48 @@ setMethod("result", "FAKinSumResults", function(object, method="BH"){
         affected_id=affIds,
         family=fams,
         affected=rep(length(resList$affected), length(resList$sumKinship)),
+        ksgrp=NA,
         kinship_sum=resList$sumKinship,
         freq=resList$frequencyKinship,
         pvalue=resList$pvalueKinship,
         padj=p.adjust(resList$pvalueKinship, method=method),
         stringsAsFactors=FALSE)
     rownames(res) <- as.character(res$affected_id)
-    return(res[order(res$pvalue, -res$kinship_sum), , drop=FALSE])
+    res <- res[order(res$pvalue, -res$kinship_sum), , drop=FALSE]
+    padj <- res$padj
+    names(padj) <- rownames(res)
+    res$ksgrp <- define.result.groups.ks(kinship(object), padj, th=cutoff,
+                                         rmKinship=rmKinship)
+    return(res)
 })
 
-
+##' Define groups of related affected individuals for KS test.
+##' @param kin Kinship matrix.
+##' @param padj Named vector with adjusted P values of all affected individuals.
+##' @param th  Threshold of `padj` for inclusion of affected individuals.
+##' @param rmKinship Ignore all pairs with kinship <= rmKinship.
+##' @return A named vector of group numbers or NAs, the names correspond to the
+##' IDs of the affected individuals. An NA indicates that the affected
+##' individual was above the threshold. The named vector corresponds to the
+##' entries in vector `padj`.
+define.result.groups.ks <- function(kin, padj, th=0.05, rmKinship=0)
+{
+    stopifnot("Vector padj must have associated names."=!is.null(names(padj)))
+    allIDs <- names(padj)
+    thIDs <- allIDs[padj<th]
+    grpNr  <- 1
+    grp    <- rep(NA, length(allIDs))
+    names(grp) <- allIDs
+    while( length(thIDs)>0 ) {
+        kinIDs <- intersect(
+            doShareKinship(kin=kin, id=thIDs[1], rmKinship=rmKinship), allIDs)
+        ## Don't overwrite previously assigned group numbers.
+        grp[is.na(grp) & names(grp) %in% kinIDs] <- grpNr
+        grpNr <- grpNr + 1
+        thIDs <- setdiff(thIDs, kinIDs)
+    }
+    grp
+}
 
 ## null hypothesis. H0: sum of kinship values of affected
 ## with all other affected is random. Test: is the sum of kinship values of

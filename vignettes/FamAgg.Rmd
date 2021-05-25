@@ -24,7 +24,7 @@ references:
 ```{r  echo = FALSE, results = "hide" }
 isWindows <- .Platform$OS.type != "unix"
 library(FamAgg)
-library(BiocStyle) 
+library(BiocStyle)
 ```
 
 **Package**: `r BiocStyle::Biocpkg("FamAgg")`<br />
@@ -75,7 +75,7 @@ colnames(mbped) <- c("family", "id", "father", "mother", "sex")
 endage <- mbsub$endage
 names(endage) <- mbsub$id
 ## Create the object.
-fad <- FAData(pedigree = mbped, age = endage) 
+fad <- FAData(pedigree = mbped, age = endage)
 ```
 
 We can access all the pedigree information stored in this object using the
@@ -98,7 +98,7 @@ head(fad$sex)
 
 ## We can also access the age of each individual, if
 ## provided.
-head(age(fad)) 
+head(age(fad))
 ```
 
 To extract the pedigree for a single family we can use the `family` method,
@@ -116,7 +116,7 @@ head(family(fad, id = 3))
 
 ## Note that IDs are internally always converted to character,
 ## thus, using id=3 and id="3" return the same information.
-head(family(fad, id = "3")) 
+head(family(fad, id = "3"))
 ```
 
 Alternatively, we could subset the `FAData` to individuals of a single family.
@@ -124,7 +124,7 @@ Alternatively, we could subset the `FAData` to individuals of a single family.
 ```{r  subsetting }
 ## Subset the object to a single family.
 fam4 <- fad[fad$family == "4", ]
-table(fam4$family) 
+table(fam4$family)
 ```
 
 To explore this family we can plot its pedigree. By default, the plotting
@@ -146,7 +146,7 @@ individual's ID.
 switchPlotfun("ks2paint")
 ## By supplying device="plot", we specify that we wish to visualize the
 ## pedigree in an R plot. This is the default for "ks2paint", anyway.
-plotPed(fad, id = 3, device = "plot") 
+plotPed(fad, id = 3, device = "plot")
 ```
 
 The pedigree for an individual or a list of individuals can be extracted using
@@ -157,7 +157,7 @@ individuals and all identified parents.
 ```{r  buildPed, message = FALSE }
 ## Build the pedigree for individual 3.
 fullPed <- buildPed(fad, id = "3")
-nrow(fullPed) 
+nrow(fullPed)
 ```
 
 Alternatively, we can extract the smallest possible pedigree for a list of
@@ -168,13 +168,13 @@ between them.
 
 ```{r  buildPed-prune, message = FALSE }
 ## Find the subpedigree for individuals 21, 22 and 17.
-buildPed(fad, id = c(21, 22, 17), prune = TRUE) 
+buildPed(fad, id = c(21, 22, 17), prune = TRUE)
 ```
 
 And the pedigree plot for that subset of the whole family:
 
 ```{r  plotPed-3ids, message=FALSE, fig.align='center', warning = FALSE }
-plotPed(fad, id = c(21, 22, 17), prune = TRUE) 
+plotPed(fad, id = c(21, 22, 17), prune = TRUE)
 ```
 
 Note that the pedigree returned by the `buildPed` method for an individual might
@@ -187,7 +187,7 @@ plot&#x2026;" is issued by the `kinship2` plotting function and indicates single
 that are assigned to the family but do neither have parents nor children.)
 
 ```{r  plotPed-family-14, message=FALSE, fig.align='center', warning = FALSE }
-plotPed(fad, family = "14", cex = 0.4) 
+plotPed(fad, family = "14", cex = 0.4)
 ```
 
 In this family, founder `441` is the founder of two family branches. Building
@@ -202,7 +202,7 @@ she shares kinship with them (*via* her mother `441`).
 any(buildPed(fad, id = "440")$id == "26064")
 
 ## What for the pedigree of 447?
-any(buildPed(fad, id = "447")$id == "26064") 
+any(buildPed(fad, id = "447")$id == "26064")
 ```
 
 A family pedigree may consist of many founder couples (i.e. individuals for
@@ -214,7 +214,7 @@ couples in the family pedigree with the same number of offspring generations.
 
 ```{r  findFounders, message = FALSE }
 ## Find founders for family 4.
-findFounders(fad, "4") 
+findFounders(fad, "4")
 ```
 
 Alternatively, it might be of interest to determine the closest common ancestor
@@ -224,7 +224,7 @@ know from the pedigree a bit above are `1` and `2`).
 
 ```{r  getCommonAncestors, message = FALSE }
 ## Find the closest common ancestor.
-getCommonAncestor(fad, id = c(21, 22, 17)) 
+getCommonAncestor(fad, id = c(21, 22, 17))
 ```
 
 Other useful methods are `getChildren`, `getAncestors` and `getSiblings`, that
@@ -243,7 +243,7 @@ getChildren(fad, id = "4")
 getAncestors(fad, id = "4")
 
 ## Get the siblings.
-getSiblings(fad, id = c("4")) 
+getSiblings(fad, id = c("4"))
 ```
 
 In the whole Minnesota Breast Cancer data set there are 426 families
@@ -280,7 +280,7 @@ length(founders)
 
 ## The number of families with affected founder.
 length(affFounders)
- 
+
 ```
 
 Unexpectedly, only in few families one of the founders is affected. For the
@@ -298,7 +298,7 @@ sum(kin2affFounders %in% affIds)
 
 ## How many affected are not related to an affected founder?
 sum(!(affIds %in% kin2affFounders))
- 
+
 ```
 
 
@@ -309,7 +309,19 @@ identify all individuals in the pedigree that share kinship with individual `4`.
 
 ```{r  shareKinship, message = FALSE }
 ## Get all individuals sharing kinship with individual 4.
-shareKinship(fad, id = "4") 
+shareKinship(fad, id = "4")
+```
+
+It is also possible to prune remote relatives. If we don't want to include grand
+children, (first) cousins and everbody else more remotely related to individual
+`4`, we use the option `rmKinship`. Essentially, only siblings, children, and
+parents remain.
+
+```{r  shareKinshipRm, message = FALSE }
+## Get all individuals sharing kinship with individual 4, but only with kinship
+## higher than 0.125 (exclude first cousins, grand children, great grand
+## parents etc, i.e. everybody with kinship 0.125 or lower)
+shareKinship(fad, id = "4", rmKinship = 0.125)
 ```
 
 Next, we determine generations within the pedigree. Generations can only be
@@ -325,7 +337,7 @@ names corresponding to the ID of the respective individual).
 
 ```{r  estimageGenerations, message = FALSE }
 ## Estimate generation levels for all families.
-estimateGenerations(fad)[1:3] 
+estimateGenerations(fad)[1:3]
 ```
 
 Individuals without generation level (i.e. with an `NA`) are not connected to
@@ -336,13 +348,13 @@ In addition, it is also possible to calculate generation levels relative to a
 (single) specified individual:
 
 ```{r  generationsFrom, message = FALSE }
-gens <- generationsFrom(fad, id = "4") 
+gens <- generationsFrom(fad, id = "4")
 ```
 
 We can render these generation numbers into the pedigree:
 
 ```{r  plotPed-with-generations, message=FALSE, fig.align='center', warning = FALSE }
-plotPed(fad, family = 4, label2 = gens) 
+plotPed(fad, family = 4, label2 = gens)
 ```
 
 
@@ -360,7 +372,7 @@ tcancer <- mbsub$cancer
 names(tcancer) <- mbsub$id
 ## Set the trait.
 trait(fad) <- tcancer
- 
+
 ```
 
 We can now extract the trait information from the object or identify directly
@@ -374,7 +386,7 @@ head(trait(fad))
 head(affectedIndividuals(fad))
 
 ## Or the IDs of the phenotyped individuals.
-head(phenotypedIndividuals(fad)) 
+head(phenotypedIndividuals(fad))
 ```
 
 Plotting a `FAData` object with trait information results in a pedigree plot
@@ -384,7 +396,7 @@ symbols and symbols with a question mark inside, respectively).
 
 ```{r  plotPed-with-trait, message=FALSE, fig.align='center', warning = FALSE }
 ## Plotting the pedigree for family "9".
-plotPed(fad, family = "9") 
+plotPed(fad, family = "9")
 ```
 
 In addition, we can manually highlight individuals using the `highlight.ids`
@@ -395,7 +407,7 @@ corner of the symbol and the second element on the top right corner.
 ```{r  plotPed-trait-highlight, message=FALSE, fig.align='center', warning = FALSE }
 ## Plotting the pedigree for family "9".
 plotPed(fad, family = "9", highlight.ids = list(a = c("185", "201", "198"),
-						b = c("193"))) 
+						b = c("193")))
 ```
 
 An alternative way to highlight individuals or add text to the plot is to use
@@ -413,7 +425,7 @@ applied to pedigrees.
 fullGraph <- ped2graph(pedigree(fad))
 
 ## In addition, build the graph for a single family.
-singleFam <- ped2graph(family(fad, family=4)) 
+singleFam <- ped2graph(family(fad, family=4))
 ```
 
 We can plot these pedigrees also as graph and could use any of the layout
@@ -423,7 +435,7 @@ methods provided in the `igraph` package.
 ## Build the layout.
 plot(fullGraph)
 lay <- layout_(singleFam, on_grid())
-plot(singleFam, layout = lay) 
+plot(singleFam, layout = lay)
 ```
 
 The `connectedSubgraph` function implemented in the `FamAgg` package provides
@@ -434,7 +446,7 @@ In the code below we want to extract the smallest possible connected subgraph of
 the pedigree-graph of family 4 containing individuals `7`, `8`, `27` and `17`.
 
 ```{r  connectedSubgraph, message = FALSE }
-subgr <- connectedSubgraph(singleFam, nodes = c("7", "8", "27", "17")) 
+subgr <- connectedSubgraph(singleFam, nodes = c("7", "8", "27", "17"))
 ```
 
 This is in principle what the `buildPed` method with the option `prune=TRUE`
@@ -445,7 +457,7 @@ does to find the smallest pedigree for a set of individuals, only that
 ## Plot the graph.
 plot(subgr)
 ## Similar to buildPed/plotPed with prune=TRUE.
-plotPed(fad, id=c("7", "8", "17", "27"), prune=TRUE) 
+plotPed(fad, id=c("7", "8", "17", "27"), prune=TRUE)
 ```
 
 
@@ -464,7 +476,7 @@ readLines(pedFile, n = 1)
 fad <- FAData(pedFile)
 
 head(pedigree(fad))
- 
+
 ```
 
 Alternatively, we can import pedigree data from generic input files.
@@ -475,7 +487,7 @@ pedFile <- system.file("txt/minnbreastsub.txt", package = "FamAgg")
 fad <- FAData(pedigree = pedFile, header = TRUE, id.col = "id",
 	      family.col = "famid", father.col = "fatherid",
 	      mother.col = "motherid")
- 
+
 ```
 
 And we can export pedigree data again using the `export` method. In the example
@@ -489,7 +501,7 @@ tmpF <- tempfile()
 fam4 <- fad[fad$family == 4, ]
 
 ## Export data in ped format.
-export(fam4, tmpF, format = "ped") 
+export(fam4, tmpF, format = "ped")
 ```
 
 
@@ -539,7 +551,7 @@ fad <- FAData(pedigree = mbped)
 
 ## Define the trait.
 tcancer <- mbsub$cancer
-names(tcancer) <- as.character(mbsub$id) 
+names(tcancer) <- as.character(mbsub$id)
 ```
 
 In the following section we analyze the data set first using the *genealogical
@@ -584,7 +596,7 @@ gi <- genealogicalIndexTest(fad, trait = tcancer,
 			    traitName = "cancer", nsim = nsim)
 
 ## Display the result.
-result(gi) 
+result(gi)
 ```
 
 The column *genealogical index* of the result `data.frame` shown above represents
@@ -627,7 +639,7 @@ giSexMatch <- genealogicalIndexTest(fad, trait = tcancer,
 giExtMatch <- genealogicalIndexTest(fad, trait = tcancer,
 				    traitName = "cancer", nsim = nsim,
 				    controlSetMethod = "getExternalMatched",
-				    match.using = fad$sex) 
+				    match.using = fad$sex)
 ```
 
 Note that any matching or stratified sampling can lead to the exclusion of
@@ -649,7 +661,7 @@ giStrata <- genealogicalIndexTest(fad, trait = tcancer,
 				  traitName = "cancer", nsim = nsim,
 				  strata = fad$sex)
 
-result(giStrata) 
+result(giStrata)
 ```
 
 Finally, we plot the result from the simulation. The blue vertical line in the
@@ -659,7 +671,7 @@ drawn sets are shown in grey color.
 
 ```{r  gif-4-plot, mbreast-genealogical-index-result, message=FALSE, warning=FALSE, fig.align='center' }
 ## Plot the result.
-plotRes(giStrata) 
+plotRes(giStrata)
 ```
 
 The genealogical index of familiality can also be estimated by the `gif`
@@ -692,7 +704,7 @@ gifRes <- gif(pedi[, c("id", "father", "mother")], affIds)
 gifT <- genealogicalIndexTest(fad, trait = tcancer, nsim = 100)
 
 ## Comparing the results:
-gifRes[[1]] == result(gifT)$genealogical_index 
+all.equal( result(gifT)$genealogical_index,  gifRes[[1]] )
 ```
 
 Thus, the GIF estimate from the `gap` package is identical to the one from the
@@ -711,7 +723,7 @@ giFam <- genealogicalIndexTest(fad, trait = tcancer, nsim = nsim,
 			       traitName = "Cancer")
 
 ## Display the result from the analysis.
-head(result(giFam)) 
+head(result(giFam))
 ```
 
 
@@ -737,7 +749,7 @@ details and options related to *time at risk*.
 ## rate method. We use the "endage" provided in the Minnesota Breast Cancer
 ## Record as a measure for time at risk.
 fr <- familialIncidenceRate(fad, trait = tcancer, timeAtRisk = mbsub$endage)
- 
+
 ```
 
 A note on singletons: for all per-individual measures unconnected individuals
@@ -762,7 +774,7 @@ frFamAvg <- sort(unlist(frFamAvg), decreasing = TRUE)
 plot(frFamAvg, type = "h", xaxt = "n", xlab = "", ylab = "mean FIR",
      main = "Per family averaged familial incidence rate")
 axis(side = 1, las = 2, at = 1:length(frFamAvg), label = names(frFamAvg))
- 
+
 ```
 
 Not unexpectedly, individuals in some families have on average a higher familial
@@ -781,7 +793,7 @@ frTest <- familialIncidenceRateTest(fad, trait = tcancer,
 				    traitName = "cancer",
 				    timeAtRisk = mbsub$endage,
 				    nsim = nsim)
- 
+
 ```
 
 The familial incidence rate can be extracted easily from the result object using
@@ -792,14 +804,14 @@ operator (i.e. using `$pvalue`, `$tar` or `$timeAtRisk`, respectively).
 ```{r  fir-4 }
 head(familialIncidenceRate(frTest))
 head(frTest$fir)
- 
+
 ```
 
 Finally, we inspect the results from the analysis.
 
 ```{r  fir-5 }
 head(result(frTest))
- 
+
 ```
 
 We can also identify the families containing individuals with a significant FIR.
@@ -823,7 +835,7 @@ frRes <- cbind(frRes, t(noPheNAff))
 
 ## Display the number of phenotyped and affected individuals as well as
 ## the number of individuals within the families with a significant FIR.
-frRes[order(frRes[, "no_sign_fir"], decreasing = TRUE), ] 
+frRes[order(frRes[, "no_sign_fir"], decreasing = TRUE), ]
 ```
 
 We have an enrichment of affected cases in families 173, 13 and 432.
@@ -844,7 +856,7 @@ proportions in the *real*, observed, affected.
 kinSum <- kinshipSumTest(fad, trait = tcancer, traitName = "cancer",
 			 nsim = nsim, strata = fad$sex)
 head(result(kinSum))
- 
+
 ```
 
 Next, we identify those individuals that have a significant kinship sum
@@ -858,7 +870,7 @@ kinSumRes <- result(kinSum)
 kinSumIds <- as.character(kinSumRes[kinSumRes$padj < 0.1, "affected_id"])
 
 ## From which families are these?
-table(kinSumRes[kinSumIds, "family"]) 
+table(kinSumRes[kinSumIds, "family"])
 ```
 
 Thus, most of the identified significant individuals are from two families.
@@ -884,7 +896,7 @@ strat[kinSum$id %in% fam$id[which(fam$affected > 0)]] <-
 famData <- data.frame(fr = fr, group = strat)
 boxplot(fr~group, data = famData, na.rm = TRUE, ylab = "FIR",
 	col = rep(c("#FBB4AE", "#B3CDE3"), 2))
- 
+
 ```
 
 As expected, the familial incidence rate (i.e., in the present data set, the
@@ -899,7 +911,7 @@ Next, we plot the pedigree of this family.
 ## all individuals that were not phenotypes.
 plotPed(kinSum, id = kinSumIds[1], cex = 0.3, only.phenotyped = TRUE)
 
- 
+
 ```
 
 And finally, also plot the kinship sum for the individuals with the largest
@@ -907,7 +919,7 @@ kinship sum in relation to the *expected* kinship sums from the Monte Carlo
 simulations.
 
 ```{r  kinsum-5, mbreast-family-432-affecte-res, message=FALSE, warning=FALSE, fig.align='center' }
-plotRes(kinSum, id = kinSumIds[1]) 
+plotRes(kinSum, id = kinSumIds[1])
 ```
 
 
@@ -931,7 +943,7 @@ kinGroup <- kinshipGroupTest(fad, trait = tcancer,
 			     traitName = "cancer",
 			     nsim = nsim, strata = fad$sex)
 head(result(kinGroup))
- 
+
 ```
 
 The kinship group test finds a significant aggregation of cases in families 13,
@@ -953,7 +965,7 @@ resTab <- data.frame(total_families = length(unique(kinGroup$family)),
 			 kinGroupRes[kinGroupRes$kinship_padj < 0.05, "family"]
 		     ))
 		     )
-resTab 
+resTab
 ```
 
 The most significant kinship group identified by the kinship group test is shown
@@ -970,7 +982,7 @@ plot.
 ```{r  kingroup-3, mbreast-family-432-affecte-res-kinship, message=FALSE, warning=FALSE, fig.align='center' }
 plotPed(kinGroup, id = kinGroupRes[kinGroupRes$family == "432",
 				   "group_id"][1],
-	prune = TRUE, label1 = fr) 
+	prune = TRUE, label1 = fr)
 ```
 
 
@@ -989,7 +1001,7 @@ significant enrichment of affected individuals in any family in the pedigree.
 binRes <- binomialTest(fad, trait = tcancer, traitName = "Cancer")
 
 binResTab <- result(binRes)
-head(binResTab) 
+head(binResTab)
 ```
 
 The probability used on the binomial test is shown in column `"prob"` and is in
@@ -1011,14 +1023,14 @@ tcancer[fad$sex == "M" | is.na(fad$sex)] <- NA
 binRes <- binomialTest(fad, trait = tcancer, prob = 1/8)
 
 binResTab <- result(binRes)
-head(binResTab) 
+head(binResTab)
 ```
 
 Below we plot the pedigree for the family with the strongest enrichment with
 affected individuals.
 
 ```{r  bintest-3, message = FALSE, fig.align = "center", fig.pos = "h!" }
-plotPed(binRes, family = 173) 
+plotPed(binRes, family = 173)
 ```
 
 

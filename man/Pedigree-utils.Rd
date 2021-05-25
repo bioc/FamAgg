@@ -120,7 +120,7 @@ ped2graph(ped)
 
 subPedigree(ped, id=NULL, all=TRUE)
 
-\S4method{shareKinship}{FAData}(object, id)
+\S4method{shareKinship}{FAData}(object, id, rmKinship=0)
 
 }
 \arguments{
@@ -209,6 +209,12 @@ subPedigree(ped, id=NULL, all=TRUE)
     the pedigree. If a \code{data.frame} is submitted, the columns
     \code{id}, \code{family}, \code{father}, \code{mother} and
     \code{sex} are required.
+  }
+
+  \item{rmKinship}{
+    For \code{shareKinship}: threshold for inclusion in being reported.
+    Pairs of individuals with a kinship less or equal than this value
+    will be omitted. This can be used to remove very distant relatives.
   }
 
   \item{...}{
@@ -333,9 +339,10 @@ subPedigree(ped, id=NULL, all=TRUE)
     }
 
     \item{shareKinship}{
-      Finds all related individuals (individuals sharing kinship with
-      the individual) for the specified individual(s) in the pedigree
-      and returns their ids as a character vector.
+      Finds all related individuals (individuals sharing kinship >
+      \code{rmKinship} with the individual) for the specified
+      individual(s) in the pedigree and returns their ids as a character
+      vector.
     }
   }
 }
