@@ -404,6 +404,7 @@ setMethod("plotPed", "FAKinGroupResults", function(object, id=NULL,
     if(!any(names(affGroup) == id))
         stop("The id should be one of the names of the affected kinship ",
              "groups (i.e. names(affectedKinshipGroups(object)))!")
+    id <- as.character(id)
     affGroup <- affGroup[[id]]
     callNextMethod(object = object, id = id, family = family,
                    filename = filename, device = device,
@@ -419,6 +420,7 @@ setMethod("buildPed", "FAKinGroupResults",
               if (is.null(id))
                   stop("The id of the group has to be speficied!")
               affGroup <- affectedKinshipGroups(object)
+              id <- as.character(id)
               if (!any(names(affGroup) == id))
                   stop("The id should be one of the names of the affected ",
                        "kinship groups (i.e. ",
@@ -445,6 +447,7 @@ setMethod("shareKinship", "FAKinGroupResults",
     if (is.null(id))
         stop("The id of the group has to be speficied!")
     affGroup <- affectedKinshipGroups(object)
+    id <- as.character(id)
     if (!any(names(affGroup) == id))
         stop("The id should be one of the names of the affected kinship ",
              "groups (i.e. names(affectedKinshipGroups(object)))!")
