@@ -1,4 +1,4 @@
-CHANGES in VERSION 1.20.0
+CHANGES in VERSION 1.21.1
 -------------------------
 
 o Keep memory consumption constant. This allows arbitrary long simulation
