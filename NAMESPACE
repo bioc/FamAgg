@@ -1,7 +1,7 @@
 ## Namespace
 import(utils)
 import(methods)
-importFrom("stats", "density")
+importFrom("stats", "density", "approxfun")
 ## import(BiocGenerics)
 ##import(igraph)
 importFrom("stats", "binom.test", "dbinom", "pbinom")

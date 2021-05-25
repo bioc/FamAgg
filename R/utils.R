@@ -270,6 +270,105 @@ sanitizePed <- function(ped){
     ped
 }
 
+## Add density from values x to a density d computed by a previous call to this
+## function. Make the initial call by omitting d.
+## Resulting density of the partitioned dataset is a (pretty decent)
+## approximation of the density obtained when submitting the whole dataset.
+inc.density <- function(x, d = NULL)
+{
+    if( is.null(d) ) {
+        ## adjust has been determined empirically.
+        dd <- density(x = x, n = 512, adjust = 0.75)
+    } else {
+        if( length(d$x)!=512 )
+            stop("Argument d has not been created by a call to this function.")
+        ## Determine the density data structure that has the larger domain and
+        ## add interpolated density values from the other data structure. By
+        ## this, the domain can grow and will never omit values that appear
+        ## later in the iterative process.
+        dd <- density(x, bw = d$bw, n = 512)
+        if( dd$x[512]<d$x[512] ) {
+            tmp <- dd; dd <- d; d <- tmp; rm(tmp)
+        }
+        delta <- dd$x[2] - dd$x[1]
+        f <- approxfun(d$x, d$y)
+        y <- f(dd$x)
+        y[is.na(y)] <- 0
+        dd$y <- dd$y + y
+        dd$y <- dd$y/(delta*sum(dd$y))
+        dd$n <- dd$n + d$n
+    }
+    dd
+}
+
+## Add histogram from values x to a histogram h computed by a previous call to
+## this function. Additionally, reports the number of values that produced an
+## overflow in variable nreplace (i.e. values did were too large to be included
+## in any bin of the histogram h). Make the initial call by omitting h.
+##
+## Resulting histogram of the partitioned dataset is a (pretty decent)
+## approximation of the histogram obtained when submitting the whole dataset.
+## Drawback: the domain of the histogram cannot be changed during addition of
+## new values. We therefore rely on the first batch as a random sample of the
+## population and estimate the overall domain.
+inc.hist <- function(x, h = NULL)
+{
+    if( is.null(h) ) {
+        ## Empirically determined overall size of the domain (110%).
+        hh <- hist(x, breaks = 1/127*(0:127)*max(x)*1.1, plot = FALSE)
+        hh$nreplace <- 0
+    } else {
+        if( is.null(h$nreplace) )
+            stop("Argument h has not been created by a call to this function.")
+        maxv <- h$breaks[length(h$breaks)]
+        nreplace <- sum(x>maxv)
+        if( nreplace>0 )
+            x[x>maxv] <- maxv
+        hh <- hist(x, breaks = h$breaks, plot = FALSE)
+        hh$counts <- hh$counts + h$counts
+        hh$density <- (hh$counts/sum(hh$counts))/diff(hh$breaks)
+        hh$nreplace <- h$nreplace + nreplace
+    }
+    hh
+}
+
+## Add tabulated data from values x to a table t computed by a previous call to
+## this function. Make the initial call by omitting t.
+## This function produces identical results when used in the iterative way
+## compared to submitting the whole dataset at once.
+inc.table <- function(x, t = NULL)
+{
+    if( is.null(t) ) {
+        tt <- table(x)
+    } else {
+        tt <- table(x)
+        both <- intersect(names(t), names(tt))
+        tt[both] <- tt[both] + t[both]
+        tonly <- setdiff(names(t), names(tt))
+        tt[tonly] <- t[tonly]
+    }
+    tt
+}
+
+## Convert 1D count table with only integers as counted objects to a histogram.
+table2hist.int <- function(t)
+{
+    ## Only 1D tables have names(), for higher dimensional tables, it is set to
+    ## NULL. dimnames() OTH works opposite.
+    nms <- names(t)
+    stopifnot("Table must be one-dimensional" = length(nms)>=1)
+    suppressWarnings( bins <- as.integer(names(t)) )
+    stopifnot("Table can be integer only." = all(as.character(bins)==nms))
+    h <- list(breaks = c(bins, max(bins) + 1),
+              counts = as.vector(t),
+              mids = bins + 0.5,
+              xname = "generic",
+              equidist = TRUE)
+    attr(h, "class") <- "histogram"
+    h
+}
+
+
 #' find the subPedigree (smallest pedigree) including the individuals specified
 #' with id and all eventually needed additionals
 #'
