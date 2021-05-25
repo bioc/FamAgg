@@ -19,7 +19,7 @@ doPlotPed(family=NULL, individual=NULL, father=NULL, mother=NULL, gender=NULL,
         text3.below.symbol=NULL, text4.below.symbol=NULL,
         filename=NULL, device="plot", res=600, ...)
 
-switchPlotfun(method)
+switchPlotfun(method, check=TRUE)
 
 }
 \arguments{
@@ -138,6 +138,14 @@ switchPlotfun(method)
     functions switches between the methods.
   }
 
+  \item{check}{
+    A logical indicating whether the plotting backends (currently
+    applied only to \code{HaploPaint}) is installed and working. Defaults
+    to \code{TRUE}, such that it is guaranteed that a call to
+    \code{doPlotPed} will at least technically succeed. The test is omitted
+    by setting this argument to \code{FALSE}.
+  }
+
   \item{...}{
     For \code{plotPed}: additional arguments submitted to the plotting
     function \code{doPlotPed}.
@@ -168,17 +176,23 @@ switchPlotfun(method)
   \code{HaploPainter} is a perl script/tool for pedigree plotting bundled in
   the package that requires however some dependencies that might not be
   present on every system. Thus, the package checks on startup whether
-  all requirements for \code{HaploPainter} are available.
+  all requirements for \code{HaploPainter} are available. This check can
+  be skipped by using \code{check=FALSE} when calling \code{switchPlotFun}.
+  While using this argument is generally not recommended, it is of use
+  when only writing \code{HaploPainter} input files, which does not make
+  use of the \code{HaploPainter} plotting backend.
 
   If \code{HaploPainter} is used, the plot can only be exported to a pdf
   or png device, while, if \code{kinship2} is used, the plot can also be
   directly plotted and displayed (if \code{device="plot"} is specified).
 
   \code{HaploPainter} plotting supports also \code{device = "txt"} in
-  which case the pedigree data is exported (in the HaploPainter file
+  which case the pedigree data are exported (in the HaploPainter file
   format) as a tabulator delimited file - no plot is created, the
-  name of the file is returned.
-  
+  name of the file is returned. This can even be done without a
+  \code{HaploPainter} executable by calling
+  \code{switchPlotFun("haplopaint", check=FALSE)}.
+
   Also, the arguments of this function match the arguments for
   \code{HaploPainter} and not all settings can be directly matched to
   settings in \code{kinship2} plotting. The list below lists all
@@ -252,7 +266,12 @@ switchPlotfun("ks2paint")
 doPlotPed(family=family$famid, individual=family$id, father=family$fatherid,
           mother=family$motherid, gender=family$sex, device="plot")
 
+## Finally, generate an input file that can be used for interactive or
+## scripted HaploPainter pedigree drawing.
+switchPlotfun("haplopaint", check=FALSE)
+doPlotPed(family=family$famid, individual=family$id, father=family$fatherid,
+          mother=family$motherid, gender=family$sex, device="txt",
+          filename="haplainter.tsv")
 
 }
 \keyword{hplot}
-

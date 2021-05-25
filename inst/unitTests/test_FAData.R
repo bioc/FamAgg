@@ -366,6 +366,12 @@ test_buildPed <- function() {
         plotPed(fad, id="4", device="plot")
         switchPlotfun()
     }
+    tmpf <- paste0(tempfile(), ".tsv")
+    switchPlotfun("haplopaint", check=FALSE)
+    plotPed(fad, id="4", device="txt")
+    switchPlotfun("ks2paint")
+    file.remove(tmpf)
+
     expect <- c(5, 26, 11, 12, 13)
     tmp <- buildPed(fad, id = c(26, 13, 12, 11), prune = TRUE)
     checkEquals(sort(tmp$id), sort(expect))

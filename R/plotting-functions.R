@@ -1,5 +1,5 @@
 ## here we define the pedigree plotting functions.
-switchPlotfun <- function(method){
+switchPlotfun <- function(method, check=TRUE){
     if(!missing(method)){
         method <- match.arg(method, c("ks2paint", "haplopaint"))
     }else{
@@ -9,7 +9,7 @@ switchPlotfun <- function(method){
             method <- "ks2paint"
         }
     }
-    if(method=="haplopaint"){
+    if(method=="haplopaint" && check){
         ## check if that is possible at all.
         method <- .checkHaplopaintRequirements()
     }
@@ -34,7 +34,7 @@ doPlotPed <- function(family=NULL, individual=NULL, father=NULL, mother=NULL,
     plotfun <- match.arg(plotfun, c("ks2paint", "haplopaint"))
     if(plotfun == "haplopaint"){
         if(device == "plot"){
-            device="pdf"
+            device <- "pdf"
             warning("haplopaint does not support device='plot', changing ",
                     "to 'pdf'.")
         }
