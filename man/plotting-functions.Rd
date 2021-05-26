@@ -121,10 +121,15 @@ switchPlotfun(method, check=TRUE)
   \item{device}{
     The format of the output file. Can be \code{"ps"}, \code{"pdf"},
     \code{"svg"}, \code{"png"} or \code{"txt"} if \code{HaploPainter} is
-    used to create the plot, or \code{"pdf"}, \code{"png"} or
-    \code{"plot"} if \code{kinship2} is used for plotting. Note: if
-    \code{"plot"} is specified the plot is displayed instead of exported
-    to a file.
+    used to create the plot, or \code{"pdf"}, \code{"png"} or \code{"plot"}
+    if \code{kinship2} is used for plotting. If the \code{HaploPainter}
+    backend is not installed, it is still possible to produce
+    \code{HaploPainter} input files using \code{devive = "txt"} for later
+    invocation of \code{HaploPainter}: this is achieved by calling
+    \code{switchPlotfun("haplopaint", check = FALSE)}, which will not check
+    for the presence of a \code{HaploPainter} executable. Note: if
+    \code{"plot"} is specified the plot is displayed instead of exported to
+    a file.
   }
 
   \item{res}{
@@ -271,7 +276,7 @@ doPlotPed(family=family$famid, individual=family$id, father=family$fatherid,
 switchPlotfun("haplopaint", check=FALSE)
 doPlotPed(family=family$famid, individual=family$id, father=family$fatherid,
           mother=family$motherid, gender=family$sex, device="txt",
-          filename="haplainter.tsv")
+          filename="haplopainter.tsv")
 
 }
 \keyword{hplot}
