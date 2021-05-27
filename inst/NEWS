@@ -1,3 +1,9 @@
+CHANGES in VERSION 1.21.2
+-------------------------
+
+o Allow writing of HaploPainter input files without a HaploPainter installation.
+
+
 CHANGES in VERSION 1.21.1
 -------------------------
 
@@ -7,7 +13,6 @@ o Keep memory consumption constant. This allows arbitrary long simulation
   of that problem, histograms and densities reported by the simulation
   functions may slightly deviate from comparable former runs on the same
   data.
-o Allow writing of HaploPainter input files without a HaploPainter installation.
 
 
 CHANGES in VERSION 1.19.1
