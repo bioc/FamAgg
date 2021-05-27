@@ -279,4 +279,4 @@ doPlotPed(family=family$famid, individual=family$id, father=family$fatherid,
           filename="haplopainter.tsv")
 
 }
-\keyword{hplot}
+\keyword{plot}

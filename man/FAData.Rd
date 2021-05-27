@@ -581,8 +581,8 @@ FAData(pedigree, age, trait, traitName, header=FALSE, sep="\t", id.col="id",
   to display the plot directly, but each plot is automatically saved to
   a file (either \code{"pdf"}, \code{"ps"}, \code{"svg"} or
   \code{"png"}; can be specified with the \code{device}
-  parameter). \code{HaploPainter} plotting supports also \code{device =
-  "txt"} in which case the data table is exported (in the format
+  parameter). \code{HaploPainter} plotting supports also
+  \code{device = "txt"} in which case the data table is exported (in the format
   expected by \code{HaploPainter}) to a tabulator delimited text file
   and the name of this text file is returned - no plot is created.
   Plotting with \code{kinship2} (the default) allows to display the plot
