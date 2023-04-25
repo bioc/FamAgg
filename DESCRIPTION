@@ -1,7 +1,7 @@
 Package: FamAgg
 Type: Package
 Title: Pedigree Analysis and Familial Aggregation
-Version: 1.28.0
+Version: 1.29.0
 Authors@R: c(person(given = "Johannes", family = "Rainer",
 	   email = "johannes.rainer@eurac.edu",
 	   role = c("aut", "cre"),
